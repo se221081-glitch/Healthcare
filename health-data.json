@@ -1,6 +1,30 @@
 {
   "logs": [
     {
+      "date": "2026-06-27",
+      "logTime": "07:18",
+      "activity": {
+        "steps": 50008,
+        "activeMinutes": 33,
+        "activityType": ""
+      },
+      "nutrition": {
+        "waterLitres": 4,
+        "mealsCount": 3,
+        "notes": "good"
+      },
+      "sleep": {
+        "sleepHours": 5,
+        "sleepQuality": "good",
+        "moodScale": 5,
+        "energyScale": 6,
+        "notes": "well"
+      },
+      "medications": [],
+      "medNotes": "",
+      "savedAt": "2026-06-26T07:18:47"
+    },
+    {
       "date": "2026-06-25",
       "logTime": "08:30",
       "activity": {

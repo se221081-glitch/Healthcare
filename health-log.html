@@ -1028,14 +1028,20 @@
           if (submitBtn) submitBtn.setAttribute('aria-busy', 'true');
           if (submitLbl) submitLbl.textContent = 'Saving…';
 
-          // ── POST to local server (writes to health-data.json) ──
-          // Fire-and-forget: localStorage already saved so success modal always shows
+          // ── POST to online API (writes to serverless storage) ──
+          // localStorage already saved so the success modal always shows
           fetch('/api/logs', {
             method:  'POST',
             headers: { 'Content-Type': 'application/json' },
             body:    JSON.stringify(logEntry),
-            signal:  AbortSignal.timeout(3000)
-          }).catch(() => {}); // Silently ignore if server not running
+            signal:  AbortSignal.timeout(10000)
+          }).then(async response => {
+            if (!response.ok) {
+              throw new Error('Save request failed');
+            }
+          }).catch(() => {
+            ToastSystem.show('warning', 'Save pending', 'Your entry is saved locally, but the online sync is taking longer than expected.');
+          });
 
           // ── Populate success modal summary ──
           const dateVal  = document.getElementById('logDate');
