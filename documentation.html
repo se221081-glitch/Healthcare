@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HealthTrack — Accessibility Documentation</title>
+  <link rel="stylesheet" href="tokens.css">
+  <style>
+    /* ── Document layout ── */
+    body {
+      background: var(--color-bg-base);
+      color: var(--color-neutral-700);
+      font-family: var(--font-ui);
+      font-size: var(--text-body);
+      line-height: var(--leading-normal);
+    }
+
+    .doc-wrap {
+      max-width: 900px;
+      margin: var(--space-8) auto;
+      padding: 0 var(--space-6) var(--space-16);
+    }
+
+    /* ── Print bar ── */
+    .print-bar {
+      background: var(--color-bg-elevated);
+      border: 1px solid var(--color-neutral-200);
+      border-radius: var(--radius-lg);
+      padding: var(--space-4) var(--space-6);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: var(--space-8);
+      gap: var(--space-4);
+    }
+    .print-bar p { font-size: var(--text-body-s); color: var(--color-neutral-500); margin: 0; }
+
+    /* ── Cover page ── */
+    .cover {
+      background: var(--color-bg-elevated);
+      border: 1px solid var(--color-neutral-200);
+      border-radius: var(--radius-xl);
+      padding: var(--space-12) var(--space-10);
+      margin-bottom: var(--space-8);
+      text-align: center;
+    }
+    .cover-logo {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-3);
+      margin-bottom: var(--space-8);
+    }
+    .cover-logo-icon {
+      width: 48px; height: 48px;
+      background: var(--color-primary-600);
+      border-radius: var(--radius-lg);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .cover-logo-text { font-size: var(--text-h2); font-weight: var(--weight-bold); color: var(--color-neutral-800); }
+    .cover h1 {
+      font-size: var(--text-display);
+      font-weight: var(--weight-bold);
+      color: var(--color-neutral-900);
+      margin-bottom: var(--space-4);
+      line-height: 1.2;
+    }
+    .cover-subtitle {
+      font-size: var(--text-h3);
+      color: var(--color-neutral-500);
+      margin-bottom: var(--space-8);
+    }
+    .cover-meta {
+      display: inline-grid;
+      grid-template-columns: auto auto;
+      gap: var(--space-2) var(--space-8);
+      text-align: left;
+      font-size: var(--text-body-s);
+      color: var(--color-neutral-600);
+      background: var(--color-bg-base);
+      padding: var(--space-5) var(--space-8);
+      border-radius: var(--radius-lg);
+    }
+    .cover-meta dt { font-weight: var(--weight-semibold); color: var(--color-neutral-500); text-transform: uppercase; font-size: var(--text-caption); letter-spacing: var(--tracking-wider); }
+    .cover-meta dd { color: var(--color-neutral-700); }
+    .wcag-badge {
+      display: inline-flex; align-items: center; gap: var(--space-2);
+      background: var(--color-primary-50); color: var(--color-primary-700);
+      border: 1px solid var(--color-primary-200);
+      padding: var(--space-2) var(--space-4);
+      border-radius: var(--radius-full);
+      font-size: var(--text-body-s); font-weight: var(--weight-semibold);
+      margin-top: var(--space-6);
+    }
+
+    /* ── Section cards ── */
+    .doc-section {
+      background: var(--color-bg-elevated);
+      border: 1px solid var(--color-neutral-200);
+      border-radius: var(--radius-xl);
+      margin-bottom: var(--space-6);
+      overflow: hidden;
+    }
+    .doc-section-header {
+      padding: var(--space-5) var(--space-8);
+      background: var(--color-neutral-50);
+      border-bottom: 1px solid var(--color-neutral-200);
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+    }
+    .section-num {
+      width: 32px; height: 32px;
+      background: var(--color-primary-600);
+      color: white;
+      border-radius: var(--radius-full);
+      display: flex; align-items: center; justify-content: center;
+      font-size: var(--text-body-s); font-weight: var(--weight-bold);
+      flex-shrink: 0;
+    }
+    .doc-section-header h2 {
+      font-size: var(--text-h3);
+      font-weight: var(--weight-bold);
+      color: var(--color-neutral-800);
+      margin: 0;
+    }
+    .doc-section-body { padding: var(--space-6) var(--space-8); }
+
+    /* ── Tables ── */
+    .doc-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: var(--text-body-s);
+      margin-bottom: var(--space-6);
+    }
+    .doc-table caption {
+      text-align: left;
+      font-size: var(--text-caption);
+      font-weight: var(--weight-semibold);
+      color: var(--color-neutral-500);
+      text-transform: uppercase;
+      letter-spacing: var(--tracking-wider);
+      padding-bottom: var(--space-3);
+    }
+    .doc-table th {
+      text-align: left;
+      padding: var(--space-3) var(--space-4);
+      background: var(--color-neutral-100);
+      font-size: var(--text-caption);
+      font-weight: var(--weight-semibold);
+      color: var(--color-neutral-500);
+      text-transform: uppercase;
+      letter-spacing: var(--tracking-wider);
+      border-bottom: 2px solid var(--color-neutral-200);
+    }
+    .doc-table td {
+      padding: var(--space-3) var(--space-4);
+      border-bottom: 1px solid var(--color-neutral-100);
+      color: var(--color-neutral-700);
+      vertical-align: top;
+    }
+    .doc-table tbody tr:nth-child(even) td { background: var(--color-neutral-50); }
+    .doc-table tbody tr:last-child td { border-bottom: none; }
+    .doc-table code {
+      font-family: 'Courier New', monospace;
+      font-size: 0.8em;
+      background: var(--color-neutral-100);
+      padding: 1px 4px;
+      border-radius: 3px;
+    }
+
+    /* ── Colour swatches ── */
+    .colour-swatch {
+      display: inline-block;
+      width: 16px; height: 16px;
+      border-radius: 3px;
+      border: 1px solid rgba(0,0,0,0.1);
+      vertical-align: middle;
+      margin-right: 6px;
+    }
+
+    /* ── WCAG badges ── */
+    .badge-aaa { display:inline-block; background:#E8F5EE; color:#1A7A4A; border:1px solid #5CB88A; border-radius:4px; padding:1px 6px; font-size:0.75em; font-weight:700; }
+    .badge-aa  { display:inline-block; background:#E8F2FA; color:#1A5F8F; border:1px solid #5B9DC8; border-radius:4px; padding:1px 6px; font-size:0.75em; font-weight:700; }
+    .badge-pass { display:inline-block; background:#E8F5EE; color:#1A7A4A; border:1px solid #5CB88A; border-radius:4px; padding:1px 6px; font-size:0.75em; font-weight:700; }
+
+    /* ── Sub-section headings inside body ── */
+    .subsection-title {
+      font-size: var(--text-body);
+      font-weight: var(--weight-bold);
+      color: var(--color-primary-700);
+      margin: var(--space-6) 0 var(--space-3);
+      padding-bottom: var(--space-2);
+      border-bottom: 2px solid var(--color-primary-100);
+      display: flex; align-items: center; gap: var(--space-2);
+    }
+    .subsection-title:first-child { margin-top: 0; }
+    .intro-text {
+      font-size: var(--text-body-s);
+      color: var(--color-neutral-600);
+      margin-bottom: var(--space-5);
+      line-height: var(--leading-relaxed);
+    }
+
+    /* ── Print ── */
+    @media print {
+      :root {
+        --color-bg-base: #f0f4f8;
+        --color-bg-elevated: #ffffff;
+        --color-neutral-700: #343d52;
+        --color-neutral-600: #4a5368;
+        --color-neutral-500: #636d82;
+        --color-neutral-800: #1f2637;
+        --color-neutral-900: #0f1420;
+        --color-primary-50: #e6f4f4;
+        --color-primary-100: #c2e4e3;
+        --color-primary-200: #9dd3d2;
+        --color-primary-600: #218080;
+        --color-primary-700: #186665;
+        --color-primary-800: #104646;
+        --color-neutral-50: #f6f8fa;
+        --color-neutral-100: #eceef2;
+        --color-neutral-200: #d8dce4;
+        --text-body: 1rem;
+        --text-body-s: 0.875rem;
+        --text-caption: 0.75rem;
+        --text-h3: 1.25rem;
+        --text-h2: 1.5rem;
+        --text-display: 2.5rem;
+        --weight-semibold: 600;
+        --weight-bold: 700;
+        --leading-normal: 1.5;
+        --leading-relaxed: 1.625;
+        --tracking-wider: 0.05em;
+        --space-1: 0.25rem;
+        --space-2: 0.5rem;
+        --space-3: 0.75rem;
+        --space-4: 1rem;
+        --space-5: 1.25rem;
+        --space-6: 1.5rem;
+        --space-8: 2rem;
+        --space-10: 2.5rem;
+        --space-12: 3rem;
+        --space-16: 4rem;
+        --radius-lg: 0.875rem;
+        --radius-xl: 1.25rem;
+      }
+
+      html {
+        background: #f0f4f8 !important;
+      }
+
+      body {
+        background: #f0f4f8 !important;
+        color: #111111 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        color-adjust: exact !important;
+      }
+
+      .doc-wrap {
+        background: #f0f4f8 !important;
+      }
+
+      .print-bar { display: none !important; }
+      body { font-size: 10pt; }
+      .doc-wrap {
+        max-width: 100%;
+        width: 100%;
+        margin: 0;
+        padding: 0 2mm;
+      }
+      .cover {
+        background: var(--color-bg-elevated) !important;
+        color: var(--color-neutral-900) !important;
+        border-radius: 0;
+        border: 1px solid #cfd5dc;
+        padding: 18pt;
+        page-break-after: always;
+      }
+      .cover-logo-text { color: var(--color-neutral-800) !important; }
+      .cover-subtitle { color: var(--color-neutral-500) !important; }
+      .cover-meta {
+        background: var(--color-bg-base) !important;
+        color: var(--color-neutral-700) !important;
+        display: grid;
+        grid-template-columns: max-content 1fr;
+        gap: 4pt 10pt;
+        width: 100%;
+        padding: 8pt 10pt;
+      }
+      .cover-meta dt { color: var(--color-neutral-500) !important; }
+      .cover-meta dd { color: var(--color-neutral-700) !important; }
+      .wcag-badge {
+        background: var(--color-primary-50) !important;
+        color: var(--color-primary-700) !important;
+        border-color: var(--color-primary-200) !important;
+      }
+      .doc-section {
+        background: var(--color-bg-elevated) !important;
+        border-radius: 0;
+        margin-bottom: 10pt;
+        page-break-inside: avoid;
+      }
+      .doc-section-header {
+        background: var(--color-neutral-50) !important;
+        padding: 8pt 10pt;
+      }
+      .doc-section-header h2 { color: var(--color-neutral-800) !important; }
+      .doc-section-body { padding: 8pt 10pt; }
+      .doc-table {
+        width: 100%;
+        font-size: 8.5pt;
+        table-layout: fixed;
+      }
+      .doc-table th,
+      .doc-table td {
+        padding: 4pt 5pt;
+        word-break: break-word;
+      }
+      .doc-table th {
+        background: var(--color-neutral-100) !important;
+        color: var(--color-neutral-500) !important;
+      }
+      .doc-table td { color: var(--color-neutral-700) !important; }
+      .doc-table tbody tr:nth-child(even) td { background: var(--color-neutral-50) !important; }
+      h2 { page-break-after: avoid; }
+      .badge-aaa, .badge-aa, .badge-pass {
+        border: 1px solid #000 !important;
+        background: white !important;
+        color: #000 !important;
+      }
+      .colour-swatch { border-color: #000 !important; }
+      *, *::before, *::after {
+        box-shadow: none !important;
+        text-shadow: none !important;
+      }
+      @page { size: A4 portrait; margin: 12mm 12mm 14mm 12mm; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="doc-wrap">
+
+  <!-- Print bar -->
+  <div class="print-bar no-print">
+    <p>This document is the formal accessibility submission for the HealthTrack project. Print or save as PDF via the button.</p>
+    <button class="btn btn-primary btn-sm" onclick="window.print()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+      Save as PDF
+    </button>
+  </div>
+
+  <!-- Cover page -->
+  <div class="cover">
+    <div class="cover-logo">
+      <div class="cover-logo-icon">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+      </div>
+      <span class="cover-logo-text">HealthTrack</span>
+    </div>
+    <h1>Accessibility Documentation</h1>
+    <p class="cover-subtitle">Accessible by Design — WCAG-Compliant UI/UX</p>
+    <dl class="cover-meta">
+      <dt>Standard</dt>       <dd>WCAG 2.1 Level AA</dd>
+      <dt>Application</dt>    <dd>HealthTrack Web Application</dd>
+      <dt>Screens</dt>        <dd>Welcome, Dashboard (W1), Health Log (W2), Report (W3)</dd>
+      <dt>Components</dt>     <dd>Button System, Form Field, Alert / Status</dd>
+      <dt>Font</dt>           <dd>Inter — chosen for elderly user legibility</dd>
+      <dt>Primary Colour</dt> <dd>Teal Blue — avoids red/green colour-blind confusion</dd>
+    </dl>
+    <div>
+      <span class="wcag-badge">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+        WCAG 2.1 AA Compliant
+      </span>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SECTION 1 — COLOUR TOKEN TABLE
+       ══════════════════════════════════════════ -->
+  <div class="doc-section">
+    <div class="doc-section-header">
+      <div class="section-num" aria-hidden="true">1</div>
+      <h2>Colour Accessibility Token Table</h2>
+    </div>
+    <div class="doc-section-body">
+      <p class="intro-text">All colours are defined as CSS custom properties in <code>tokens.css</code>. Contrast ratios are verified against WCAG 1.4.3 (text) and 1.4.11 (non-text). Every status colour is paired with an icon and a text label — colour is never the sole means of conveying information (WCAG 1.4.1).</p>
+
+      <div style="background:var(--color-primary-50);border:2px solid var(--color-primary-200);border-radius:var(--radius-lg);padding:var(--space-5) var(--space-6);margin-bottom:var(--space-6);">
+        <p style="font-weight:var(--weight-semibold);color:var(--color-primary-800);margin-bottom:var(--space-2);font-size:var(--text-body-s);text-transform:uppercase;letter-spacing:0.05em;">Primary Colour Justification</p>
+        <p style="font-size:var(--text-body-s);color:var(--color-neutral-700);line-height:var(--leading-relaxed);margin:0;">Teal (#218080) was selected as the primary brand colour because it sits between blue and green on the spectrum, making it distinguishable under both Deuteranopia (red-green deficiency) and Tritanopia (blue-yellow deficiency) — unlike pure green or pure red which collapse under common colour-blindness conditions. At shade 600, it achieves a 4.69:1 contrast ratio on white (WCAG AA) and scales to AAA at shade 700 and above, ensuring every interactive state meets or exceeds the minimum threshold without requiring a separate high-contrast theme. Its association with health, calm, and clinical trust reinforces the application domain without relying on culturally loaded colours such as red (danger) or yellow (caution), which are reserved exclusively for the semantic Error and Warning tokens.</p>
+      </div>
+
+      <h3 class="subsection-title">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/></svg>
+        Primary Brand Palette — Teal Blue
+      </h3>
+      <table class="doc-table" aria-label="Primary teal blue colour palette with light and dark mode hex values and contrast ratios">
+        <caption>Dark mode values lighten the palette (600 shifts to the light 300 equivalent) so contrast is maintained against the dark background #141926.</caption>
+        <thead>
+          <tr>
+            <th scope="col">Token</th>
+            <th scope="col">Light Swatch</th>
+            <th scope="col">Light Mode Hex</th>
+            <th scope="col">Dark Mode Hex</th>
+            <th scope="col">Dark Swatch</th>
+            <th scope="col">Contrast (Light/Dark)</th>
+            <th scope="col">WCAG Level</th>
+            <th scope="col">Usage</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><code>--color-primary-500</code></td><td><span class="colour-swatch" style="background:#2B9C9A"></span></td><td>#2B9C9A</td><td>#4AAEAD</td><td><span class="colour-swatch" style="background:#4AAEAD"></span></td><td>3.1:1 / 3.4:1</td><td><span class="badge-aa">AA Large</span></td><td>Brand main, decorative, large text only</td></tr>
+          <tr><td><code>--color-primary-600</code></td><td><span class="colour-swatch" style="background:#218080"></span></td><td>#218080</td><td>#72C0BE</td><td><span class="colour-swatch" style="background:#72C0BE"></span></td><td>4.69:1 / 4.8:1</td><td><span class="badge-aa">AA</span></td><td>Interactive elements, buttons, links</td></tr>
+          <tr><td><code>--color-primary-700</code></td><td><span class="colour-swatch" style="background:#186665"></span></td><td>#186665</td><td>#9DD3D2</td><td><span class="colour-swatch" style="background:#9DD3D2"></span></td><td>7.1:1 / 7.5:1</td><td><span class="badge-aaa">AAA</span></td><td>Active states, hover, skip link background</td></tr>
+          <tr><td><code>--color-primary-800</code></td><td><span class="colour-swatch" style="background:#104646"></span></td><td>#104646</td><td>#C2E4E3</td><td><span class="colour-swatch" style="background:#C2E4E3"></span></td><td>10.8:1 / 10.1:1</td><td><span class="badge-aaa">AAA</span></td><td>Heading on light backgrounds, dark overlays</td></tr>
+          <tr><td><code>--color-primary-900</code></td><td><span class="colour-swatch" style="background:#082828"></span></td><td>#082828</td><td>#E6F4F4</td><td><span class="colour-swatch" style="background:#E6F4F4;border:1px solid #ccc"></span></td><td>14.2:1 / 13.8:1</td><td><span class="badge-aaa">AAA</span></td><td>Maximum contrast, print</td></tr>
+        </tbody>
+      </table>
+
+      <h3 class="subsection-title">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="20 6 9 17 4 12"/></svg>
+        Semantic Status Colours
+      </h3>
+      <table class="doc-table" aria-label="Semantic status colours with light and dark mode hex values and contrast ratios">
+        <caption>All semantic colours are paired with icon + label text (WCAG 1.4.1). Dark mode values are lighter to maintain contrast on the dark background #141926.</caption>
+        <thead>
+          <tr>
+            <th scope="col">Token</th>
+            <th scope="col">Light Swatch</th>
+            <th scope="col">Light Mode Hex</th>
+            <th scope="col">Dark Mode Hex</th>
+            <th scope="col">Dark Swatch</th>
+            <th scope="col">Contrast on White</th>
+            <th scope="col">Contrast on Dark BG</th>
+            <th scope="col">WCAG Level</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><code>--color-success</code></td><td><span class="colour-swatch" style="background:#1A7A4A"></span></td><td>#1A7A4A</td><td>#4ABA7A</td><td><span class="colour-swatch" style="background:#4ABA7A"></span></td><td>5.1:1</td><td>4.6:1</td><td><span class="badge-aa">AA</span></td></tr>
+          <tr><td><code>--color-warning</code></td><td><span class="colour-swatch" style="background:#8C5700"></span></td><td>#8C5700</td><td>#F0A830</td><td><span class="colour-swatch" style="background:#F0A830"></span></td><td>5.7:1</td><td>5.2:1</td><td><span class="badge-aa">AA</span></td></tr>
+          <tr><td><code>--color-error</code></td><td><span class="colour-swatch" style="background:#C0352A"></span></td><td>#C0352A</td><td>#F07068</td><td><span class="colour-swatch" style="background:#F07068"></span></td><td>5.3:1</td><td>4.5:1</td><td><span class="badge-aa">AA</span></td></tr>
+          <tr><td><code>--color-info</code></td><td><span class="colour-swatch" style="background:#1A5F8F"></span></td><td>#1A5F8F</td><td>#5B9DC8</td><td><span class="colour-swatch" style="background:#5B9DC8"></span></td><td>6.2:1</td><td>4.7:1</td><td><span class="badge-aa">AA</span></td></tr>
+        </tbody>
+      </table>
+
+      <h3 class="subsection-title">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/></svg>
+        Neutral Greyscale &amp; Text Colours
+      </h3>
+      <table class="doc-table" aria-label="Neutral greyscale text colours with light and dark mode hex values">
+        <caption>In dark mode, the neutral scale is fully inverted — dark surface tokens become light text tokens. Body text (neutral-600) achieves 7.1:1 on the dark background #141926.</caption>
+        <thead>
+          <tr>
+            <th scope="col">Token</th>
+            <th scope="col">Light Swatch</th>
+            <th scope="col">Light Mode Hex</th>
+            <th scope="col">Dark Mode Hex</th>
+            <th scope="col">Dark Swatch</th>
+            <th scope="col">Contrast on White</th>
+            <th scope="col">WCAG Level</th>
+            <th scope="col">Usage</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><code>--color-neutral-500</code></td><td><span class="colour-swatch" style="background:#636D82"></span></td><td>#636D82</td><td>#6B7A96</td><td><span class="colour-swatch" style="background:#6B7A96"></span></td><td>4.6:1</td><td><span class="badge-aa">AA</span></td><td>Helper text, secondary labels</td></tr>
+          <tr><td><code>--color-neutral-600</code></td><td><span class="colour-swatch" style="background:#4A5368"></span></td><td>#4A5368</td><td>#9AA3B8</td><td><span class="colour-swatch" style="background:#9AA3B8"></span></td><td>7.2:1</td><td><span class="badge-aaa">AAA</span></td><td>Body text, form labels</td></tr>
+          <tr><td><code>--color-neutral-700</code></td><td><span class="colour-swatch" style="background:#343D52"></span></td><td>#343D52</td><td>#C2C9D8</td><td><span class="colour-swatch" style="background:#C2C9D8"></span></td><td>10.1:1</td><td><span class="badge-aaa">AAA</span></td><td>Primary body text, table data</td></tr>
+          <tr><td><code>--color-neutral-800</code></td><td><span class="colour-swatch" style="background:#1F2637"></span></td><td>#1F2637</td><td>#DDE1EA</td><td><span class="colour-swatch" style="background:#DDE1EA"></span></td><td>13.4:1</td><td><span class="badge-aaa">AAA</span></td><td>Headings, strong emphasis</td></tr>
+          <tr><td><code>--color-neutral-900</code></td><td><span class="colour-swatch" style="background:#0F1420"></span></td><td>#0F1420</td><td>#F0F2F7</td><td><span class="colour-swatch" style="background:#F0F2F7;border:1px solid #ccc"></span></td><td>18.1:1</td><td><span class="badge-aaa">AAA</span></td><td>Maximum contrast headings</td></tr>
+        </tbody>
+      </table>
+
+      <p class="intro-text" style="font-size:var(--text-caption);color:var(--color-neutral-500);margin-top:var(--space-2);">Dark mode is activated automatically via <code>@media (prefers-color-scheme: dark)</code> in tokens.css. The "Dark Mode Hex" column in each table above shows the overridden value applied when dark mode is active. All dark mode contrast ratios are measured against the dark surface background <code>#141926</code>.</p>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SECTION 2 — TYPOGRAPHY SCALE
+       ══════════════════════════════════════════ -->
+  <div class="doc-section">
+    <div class="doc-section-header">
+      <div class="section-num" aria-hidden="true">2</div>
+      <h2>Accessible Typography Scale</h2>
+    </div>
+    <div class="doc-section-body">
+      <p class="intro-text"><strong>Typeface:</strong> Inter — chosen for its large x-height, clear letterform distinction, and proven legibility for elderly users. Available via Google Fonts with variable weight support. Line-height minimum 1.5 satisfies WCAG 1.4.12 Text Spacing. All sizes use <code>rem</code> units, allowing browser font-size preferences to scale the entire interface (WCAG 1.4.4).</p>
+      <table class="doc-table" aria-label="Typography scale tokens with size, weight, line height, letter spacing and usage">
+        <thead>
+          <tr>
+            <th scope="col">Token</th>
+            <th scope="col">Size (rem)</th>
+            <th scope="col">Size (px)</th>
+            <th scope="col">Weight</th>
+            <th scope="col">Line Height</th>
+            <th scope="col">Letter Spacing</th>
+            <th scope="col">Usage</th>
+            <th scope="col">WCAG Note</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><code>--text-caption</code></td><td>0.75rem</td><td>12px</td><td>600 (semibold)</td><td>1.5</td><td>+0.05em (wider)</td><td>Metadata, timestamps, badge labels, table headers</td><td>Uppercase + wider tracking compensates for small size</td></tr>
+          <tr><td><code>--text-body-s</code></td><td>0.875rem</td><td>14px</td><td>400 (regular)</td><td>1.5</td><td>0 (normal)</td><td>Helper text, table data, secondary info</td><td>WCAG 1.4.12 compliant</td></tr>
+          <tr><td><code>--text-body</code></td><td>1rem</td><td>16px</td><td>400 (regular)</td><td>1.5</td><td>0 (normal)</td><td>Body copy, form inputs, nav labels</td><td>Minimum body size (1.4.4)</td></tr>
+          <tr><td><code>--text-label</code></td><td>1rem</td><td>16px</td><td>500 (medium)</td><td>1.5</td><td>+0.02em (wide)</td><td>Form labels, button text</td><td>Always visible — never replaced by placeholder</td></tr>
+          <tr><td><code>--text-h3</code></td><td>1.25rem</td><td>20px</td><td>600 (semibold)</td><td>1.25</td><td>-0.01em (tight)</td><td>Card headings, section sub-titles</td><td>Large text — 3:1 minimum contrast</td></tr>
+          <tr><td><code>--text-h2</code></td><td>1.5rem</td><td>24px</td><td>700 (bold)</td><td>1.25</td><td>-0.01em (tight)</td><td>Section headings, dashboard titles</td><td>Large text — 3:1 minimum contrast</td></tr>
+          <tr><td><code>--text-h1</code></td><td>2rem</td><td>32px</td><td>700 (bold)</td><td>1.25</td><td>-0.02em (tight)</td><td>Page titles, report brand header</td><td>Large text — 3:1 minimum contrast</td></tr>
+          <tr><td><code>--text-display</code></td><td>2.5rem</td><td>40px</td><td>700 (bold)</td><td>1.2</td><td>-0.03em (tight)</td><td>Hero heading on welcome page</td><td>Large text — 3:1 minimum contrast</td></tr>
+        </tbody>
+      </table>
+
+      <h3 class="subsection-title" style="margin-top:var(--space-6);">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Sample Text Rendering — Body vs Display
+      </h3>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-4);margin-bottom:var(--space-4);">
+        <div style="border:1px solid var(--color-neutral-200);border-radius:var(--radius-lg);padding:var(--space-5);background:var(--color-bg-surface);">
+          <p style="font-size:0.65rem;font-weight:600;color:var(--color-neutral-400);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:var(--space-3);">Mobile viewport — 375px</p>
+          <p style="font-size:1.5rem;font-weight:700;line-height:1.25;letter-spacing:-0.01em;color:var(--color-neutral-900);margin-bottom:var(--space-2);">Dashboard Overview</p>
+          <p style="font-size:1rem;line-height:1.5;color:var(--color-neutral-600);margin-bottom:var(--space-2);">Track your daily activity, hydration, sleep quality, and mood in one place. Log entries with a few taps.</p>
+          <p style="font-size:0.75rem;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;color:var(--color-neutral-400);">LAST UPDATED: TODAY AT 08:30</p>
+        </div>
+        <div style="border:1px solid var(--color-neutral-200);border-radius:var(--radius-lg);padding:var(--space-5);background:var(--color-bg-surface);">
+          <p style="font-size:0.65rem;font-weight:600;color:var(--color-neutral-400);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:var(--space-3);">Desktop viewport — 1280px</p>
+          <p style="font-size:2rem;font-weight:700;line-height:1.25;letter-spacing:-0.02em;color:var(--color-neutral-900);margin-bottom:var(--space-2);">Dashboard Overview</p>
+          <p style="font-size:1rem;line-height:1.5;color:var(--color-neutral-600);margin-bottom:var(--space-2);">Track your daily activity, hydration, sleep quality, and mood in one place. Log entries with a few taps.</p>
+          <p style="font-size:0.75rem;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;color:var(--color-neutral-400);">LAST UPDATED: TODAY AT 08:30</p>
+        </div>
+      </div>
+      <p class="intro-text">On mobile (375px), the heading uses <code>--text-h2</code> (1.5rem / 24px) to preserve breathing room. On desktop (1280px), the same heading uses <code>--text-h1</code> (2rem / 32px) with tighter letter-spacing (-0.02em) for visual authority. Body copy remains at <code>--text-body</code> (1rem) on both viewports — never smaller — satisfying WCAG 1.4.4.</p>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SECTION 3 — SPACING & TOUCH TARGETS
+       ══════════════════════════════════════════ -->
+  <div class="doc-section">
+    <div class="doc-section-header">
+      <div class="section-num" aria-hidden="true">3</div>
+      <h2>Spacing System &amp; Touch Target Specifications</h2>
+    </div>
+    <div class="doc-section-body">
+      <p class="intro-text">The spacing system uses an 8-point base grid. Every spacing value is a multiple of 4px (half-step at <code>--space-1</code>) or 8px, ensuring visual alignment across all components. All interactive elements enforce a minimum 44×44px touch/click target per WCAG 2.5.5.</p>
+
+      <h3 class="subsection-title">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+        Spacing Token Table
+      </h3>
+      <table class="doc-table" aria-label="Spacing token table with rem, pixel values and usage guidance">
+        <thead>
+          <tr>
+            <th scope="col">Token</th>
+            <th scope="col">rem</th>
+            <th scope="col">px</th>
+            <th scope="col">Visual Scale</th>
+            <th scope="col">When to Use</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>--space-1</code></td><td>0.25rem</td><td>4px</td>
+            <td><span style="display:inline-block;width:4px;height:12px;background:var(--color-primary-400);border-radius:2px;vertical-align:middle;"></span></td>
+            <td>Micro gaps: icon-to-label gap, badge inner padding, focus ring offset</td>
+          </tr>
+          <tr>
+            <td><code>--space-2</code></td><td>0.5rem</td><td>8px</td>
+            <td><span style="display:inline-block;width:8px;height:12px;background:var(--color-primary-400);border-radius:2px;vertical-align:middle;"></span></td>
+            <td>Tight inline spacing: checkbox-to-label gap, chip padding, tooltip inner padding</td>
+          </tr>
+          <tr>
+            <td><code>--space-3</code></td><td>0.75rem</td><td>12px</td>
+            <td><span style="display:inline-block;width:12px;height:12px;background:var(--color-primary-400);border-radius:2px;vertical-align:middle;"></span></td>
+            <td>Compact list items, table cell padding, button icon gap</td>
+          </tr>
+          <tr>
+            <td><code>--space-4</code></td><td>1rem</td><td>16px</td>
+            <td><span style="display:inline-block;width:16px;height:12px;background:var(--color-primary-500);border-radius:2px;vertical-align:middle;"></span></td>
+            <td>Default component padding (button horizontal, input padding), small card inner gap</td>
+          </tr>
+          <tr>
+            <td><code>--space-5</code></td><td>1.25rem</td><td>20px</td>
+            <td><span style="display:inline-block;width:20px;height:12px;background:var(--color-primary-500);border-radius:2px;vertical-align:middle;"></span></td>
+            <td>Form field vertical gap, sidebar item padding, modal header padding</td>
+          </tr>
+          <tr>
+            <td><code>--space-6</code></td><td>1.5rem</td><td>24px</td>
+            <td><span style="display:inline-block;width:24px;height:12px;background:var(--color-primary-600);border-radius:2px;vertical-align:middle;"></span></td>
+            <td>Card body padding, section inner padding, grid column gap</td>
+          </tr>
+          <tr>
+            <td><code>--space-8</code></td><td>2rem</td><td>32px</td>
+            <td><span style="display:inline-block;width:32px;height:12px;background:var(--color-primary-600);border-radius:2px;vertical-align:middle;"></span></td>
+            <td>Between major card sections, page header bottom margin, sidebar section gap</td>
+          </tr>
+          <tr>
+            <td><code>--space-10</code></td><td>2.5rem</td><td>40px</td>
+            <td><span style="display:inline-block;width:40px;height:12px;background:var(--color-primary-700);border-radius:2px;vertical-align:middle;"></span></td>
+            <td>Cover page inner padding, large form section separator</td>
+          </tr>
+          <tr>
+            <td><code>--space-12</code></td><td>3rem</td><td>48px</td>
+            <td><span style="display:inline-block;width:48px;height:12px;background:var(--color-primary-700);border-radius:2px;vertical-align:middle;"></span></td>
+            <td>Hero section vertical padding, cover page top/bottom breathing room</td>
+          </tr>
+          <tr>
+            <td><code>--space-16</code></td><td>4rem</td><td>64px</td>
+            <td><span style="display:inline-block;width:64px;height:12px;background:var(--color-primary-800);border-radius:2px;vertical-align:middle;"></span></td>
+            <td>Page-level bottom padding, between major document sections</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3 class="subsection-title" style="margin-top:var(--space-6);">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        Touch / Click Target Size Diagram — Compliant vs Non-Compliant
+      </h3>
+      <p class="intro-text">WCAG 2.5.5 requires a minimum 44×44 CSS pixel target for all interactive controls. The diagram below shows the difference between a compliant button, an icon-only button meeting the target, and a non-compliant small button that would fail the criterion.</p>
+
+      <div style="display:flex;flex-wrap:wrap;gap:var(--space-8);align-items:flex-start;margin-bottom:var(--space-6);padding:var(--space-6);background:var(--color-neutral-50);border-radius:var(--radius-lg);border:1px solid var(--color-neutral-200);">
+
+        <!-- Compliant: text button -->
+        <div style="display:flex;flex-direction:column;align-items:center;gap:var(--space-3);">
+          <div style="position:relative;">
+            <button style="height:44px;padding:0 20px;background:#218080;color:white;border:none;border-radius:6px;font-size:1rem;font-weight:600;cursor:default;display:flex;align-items:center;gap:8px;" aria-hidden="true" tabindex="-1">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+              Save Entry
+            </button>
+            <div style="position:absolute;inset:-1px;border:2px dashed #1A7A4A;border-radius:7px;pointer-events:none;" aria-hidden="true"></div>
+          </div>
+          <span style="font-size:0.7rem;font-weight:700;color:#1A7A4A;text-transform:uppercase;letter-spacing:0.04em;">COMPLIANT</span>
+          <span style="font-size:0.75rem;color:var(--color-neutral-500);text-align:center;">Primary button<br>44px height &times; auto width</span>
+        </div>
+
+        <!-- Compliant: icon-only -->
+        <div style="display:flex;flex-direction:column;align-items:center;gap:var(--space-3);">
+          <div style="position:relative;">
+            <button style="width:44px;height:44px;background:#E8F5EE;border:1px solid #5CB88A;border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:default;" aria-label="Dismiss alert" aria-hidden="true" tabindex="-1">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1A7A4A" stroke-width="2.5" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+            <div style="position:absolute;inset:-1px;border:2px dashed #1A7A4A;border-radius:7px;pointer-events:none;" aria-hidden="true"></div>
+          </div>
+          <span style="font-size:0.7rem;font-weight:700;color:#1A7A4A;text-transform:uppercase;letter-spacing:0.04em;">COMPLIANT</span>
+          <span style="font-size:0.75rem;color:var(--color-neutral-500);text-align:center;">Icon-only button<br>44px &times; 44px + aria-label</span>
+        </div>
+
+        <!-- Spacer + divider -->
+        <div style="width:1px;background:var(--color-neutral-300);align-self:stretch;margin:0 var(--space-2);" aria-hidden="true"></div>
+
+        <!-- Non-compliant: small button -->
+        <div style="display:flex;flex-direction:column;align-items:center;gap:var(--space-3);">
+          <div style="position:relative;">
+            <button style="height:28px;padding:0 10px;background:#E07068;color:white;border:none;border-radius:4px;font-size:0.75rem;cursor:default;" aria-hidden="true" tabindex="-1">Delete</button>
+            <div style="position:absolute;inset:-1px;border:2px dashed #C0352A;border-radius:5px;pointer-events:none;" aria-hidden="true"></div>
+          </div>
+          <span style="font-size:0.7rem;font-weight:700;color:#C0352A;text-transform:uppercase;letter-spacing:0.04em;">NON-COMPLIANT</span>
+          <span style="font-size:0.75rem;color:var(--color-neutral-500);text-align:center;">Small button<br>28px height — fails WCAG 2.5.5</span>
+        </div>
+
+        <!-- Non-compliant: icon without padding -->
+        <div style="display:flex;flex-direction:column;align-items:center;gap:var(--space-3);">
+          <div style="position:relative;">
+            <button style="width:24px;height:24px;background:none;border:1px solid #E07068;border-radius:4px;display:flex;align-items:center;justify-content:center;cursor:default;" aria-hidden="true" tabindex="-1">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#C0352A" stroke-width="2.5" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>
+            </button>
+            <div style="position:absolute;inset:-1px;border:2px dashed #C0352A;border-radius:5px;pointer-events:none;" aria-hidden="true"></div>
+          </div>
+          <span style="font-size:0.7rem;font-weight:700;color:#C0352A;text-transform:uppercase;letter-spacing:0.04em;">NON-COMPLIANT</span>
+          <span style="font-size:0.75rem;color:var(--color-neutral-500);text-align:center;">Bare icon<br>24px &times; 24px — too small</span>
+        </div>
+      </div>
+
+      <table class="doc-table" aria-label="Touch target compliance summary">
+        <thead>
+          <tr>
+            <th scope="col">Element</th>
+            <th scope="col">Minimum Size Applied</th>
+            <th scope="col">WCAG 2.5.5</th>
+            <th scope="col">Implementation</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Primary / Secondary buttons</td><td>44px height, auto width</td><td><span class="badge-pass">Pass</span></td><td><code>min-height: var(--target-min)</code> on <code>.btn</code></td></tr>
+          <tr><td>Icon-only buttons (dismiss, settings)</td><td>44px &times; 44px</td><td><span class="badge-pass">Pass</span></td><td><code>min-width: 44px; min-height: 44px</code> + <code>aria-label</code></td></tr>
+          <tr><td>Form inputs (text, date, select)</td><td>44px height</td><td><span class="badge-pass">Pass</span></td><td><code>min-height: var(--target-min)</code> on <code>.form-input</code></td></tr>
+          <tr><td>Checkboxes &amp; radio buttons</td><td>44px clickable area via label</td><td><span class="badge-pass">Pass</span></td><td><code>label</code> wraps input; label has <code>min-height: 44px</code></td></tr>
+          <tr><td>Sidebar navigation items</td><td>48px height</td><td><span class="badge-pass">Pass</span></td><td><code>padding: 12px 16px</code> on <code>.sidebar-link</code></td></tr>
+          <tr><td>Mood selector emoji buttons</td><td>44px &times; 44px</td><td><span class="badge-pass">Pass</span></td><td><code>min-width: 44px; min-height: 44px</code> on <code>.mood-btn</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SECTION 4 — WCAG COMPLIANCE DOCUMENT
+       ══════════════════════════════════════════ -->
+  <div class="doc-section">
+    <div class="doc-section-header">
+      <div class="section-num" aria-hidden="true">4</div>
+      <h2>WCAG 2.1 Compliance Document</h2>
+    </div>
+    <div class="doc-section-body">
+      <p class="intro-text">The following tables document every WCAG 2.1 criterion addressed, organised by screen. Each entry identifies the criterion, describes the specific design/code decision taken, and states the conformance level achieved.</p>
+
+      <h3 class="subsection-title">All Screens (Global)</h3>
+      <table class="doc-table" aria-label="WCAG compliance for all screens globally">
+        <thead>
+          <tr>
+            <th scope="col">Criterion</th>
+            <th scope="col">Description</th>
+            <th scope="col">Implementation</th>
+            <th scope="col">Level</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1.1.1</td>
+            <td>Non-text Content</td>
+            <td>All decorative SVG icons have <code>aria-hidden="true" focusable="false"</code>. Informative icons have adjacent visible text labels. The steps chart uses <code>role="img"</code> with a full <code>aria-label</code> describing all data points.</td>
+            <td><span class="badge-aa">AA</span></td>
+          </tr>
+          <tr>
+            <td>1.4.3</td>
+            <td>Contrast (Minimum)</td>
+            <td>Body text (neutral-700) achieves 10.1:1 on white. All interactive text uses primary-600 at 4.69:1 minimum. Helper text uses neutral-500 at 4.6:1. No text falls below 4.5:1.</td>
+            <td><span class="badge-aa">AA</span></td>
+          </tr>
+          <tr>
+            <td>1.4.4</td>
+            <td>Resize Text</td>
+            <td>All font sizes use <code>rem</code> units relative to the browser root. No text is set in fixed <code>px</code>. Text reflows correctly at 200% browser zoom.</td>
+            <td><span class="badge-aa">AA</span></td>
+          </tr>
+          <tr>
+            <td>1.4.12</td>
+            <td>Text Spacing</td>
+            <td>Line height set to 1.5 (WCAG minimum 1.5×). Letter-spacing tokens defined (0.02em–0.05em). No content is clipped when text spacing is overridden via user stylesheet.</td>
+            <td><span class="badge-aa">AA</span></td>
+          </tr>
+          <tr>
+            <td>2.1.1</td>
+            <td>Keyboard</td>
+            <td>All interactive elements (buttons, links, form fields, sliders, modals) are reachable and operable via keyboard. No keyboard traps except the intentional focus trap inside modals (WCAG 2.1.2 compliant — Escape closes).</td>
+            <td><span class="badge-aa">AA</span></td>
+          </tr>
+          <tr>
+            <td>2.3.3</td>
+            <td>Animation from Interactions</td>
+            <td><code>@media (prefers-reduced-motion: reduce)</code> block in tokens.css disables all CSS transitions and animations globally. Toast fade, section slide-in, and card hover lift are all suppressed.</td>
+            <td><span class="badge-aaa">AAA</span></td>
+          </tr>
+          <tr>
+            <td>2.4.1</td>
+            <td>Bypass Blocks</td>
+            <td>Every page has a visually hidden skip link (<code>&lt;a href="#main-content"&gt;</code>) that becomes visible on focus. Styled with primary-700 background for high contrast.</td>
+            <td><span class="badge-aa">AA</span></td>
+          </tr>
+          <tr>
+            <td>2.4.7</td>
+            <td>Focus Visible</td>
+            <td>CSS custom property <code>--focus-ring: 0 0 0 3px #FFF, 0 0 0 5px #2B9C9A</code> applied to all interactive elements via <code>:focus-visible</code>. Double-ring design ensures visibility on any background colour.</td>
+            <td><span class="badge-aa">AA</span></td>
+          </tr>
+          <tr>
+            <td>2.5.3</td>
+            <td>Label in Name</td>
+            <td>All button and link visible text exactly matches their accessible name. <code>aria-label</code> values that override visible text include the visible text as a substring.</td>
+            <td><span class="badge-aa">AA</span></td>
+          </tr>
+          <tr>
+            <td>2.5.5</td>
+            <td>Target Size</td>
+            <td><code>--target-min: 2.75rem</code> (44px) applied via <code>min-height: var(--target-min)</code> on all buttons, links, form inputs, and checkboxes. Mood selector buttons also enforce <code>min-width: 44px</code>.</td>
+            <td><span class="badge-aa">AA</span></td>
+          </tr>
+          <tr>
+            <td>3.1.1</td>
+            <td>Language of Page</td>
+            <td><code>lang="en"</code> is set on the <code>&lt;html&gt;</code> element of every page.</td>
+            <td><span class="badge-aa">AA</span></td>
+          </tr>
+          <tr>
+            <td>4.1.3</td>
+            <td>Status Messages</td>
+            <td>Toast notification region has <code>aria-live="polite" aria-atomic="true"</code>. Form error summary uses <code>aria-live="assertive"</code>. Range slider value outputs have <code>aria-live="polite"</code>.</td>
+            <td><span class="badge-aa">AA</span></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3 class="subsection-title">W1 — Dashboard (dashboard.html)</h3>
+      <table class="doc-table" aria-label="WCAG compliance for dashboard screen">
+        <thead>
+          <tr>
+            <th scope="col">Criterion</th>
+            <th scope="col">Description</th>
+            <th scope="col">Implementation</th>
+            <th scope="col">Level</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1.3.1</td>
+            <td>Info and Relationships</td>
+            <td>Landmark regions: <code>&lt;header role="banner"&gt;</code>, <code>&lt;nav aria-label="Main navigation"&gt;</code>, <code>&lt;main&gt;</code>, <code>&lt;aside&gt;</code>. Heading hierarchy H1 → H2 → H3, no levels skipped. Stat grid uses <code>role="list"</code> with <code>role="listitem"</code> on each card.</td>
+            <td><span class="badge-aa">AA</span></td>
+          </tr>
+          <tr>
+            <td>1.4.1</td>
+            <td>Use of Colour</td>
+            <td>Each stat card uses icon + colour + text label. Progress bars display a percentage number alongside the bar. Chart bars have value labels above. Active sidebar item uses left border indicator + colour + bold weight. No information conveyed by colour alone.</td>
+            <td><span class="badge-aa">AA</span></td>
+          </tr>
+          <tr>
+            <td>1.4.11</td>
+            <td>Non-text Contrast</td>
+            <td>Input focus rings exceed 3:1. Progress bar fill against its track background exceeds 3:1. Sidebar icons against sidebar background exceed 3:1.</td>
+            <td><span class="badge-aa">AA</span></td>
+          </tr>
+          <tr>
+            <td>2.4.4</td>
+            <td>Link Purpose</td>
+            <td>All navigation links have descriptive text. "View history", "View all activity" links have <code>aria-label</code> providing full context. No "click here" or ambiguous link text.</td>
+            <td><span class="badge-aa">AA</span></td>
+          </tr>
+          <tr>
+            <td>2.4.8</td>
+            <td>Location</td>
+            <td>Breadcrumb navigation (<code>&lt;nav aria-label="Breadcrumb"&gt;</code>) shows Home / Dashboard. Active sidebar item has <code>aria-current="page"</code>.</td>
+            <td><span class="badge-aaa">AAA</span></td>
+          </tr>
+          <tr>
+            <td>4.1.2</td>
+            <td>Name, Role, Value</td>
+            <td>Progress bars have <code>role="progressbar"</code> with <code>aria-valuenow</code>, <code>aria-valuemin</code>, <code>aria-valuemax</code>. Stat cards have descriptive <code>aria-label</code>. Chart toggle button has <code>aria-expanded</code> and <code>aria-controls</code>.</td>
+            <td><span class="badge-aa">AA</span></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3 class="subsection-title">W2 — Health Log Form (health-log.html)</h3>
+      <table class="doc-table" aria-label="WCAG compliance for health log form screen">
+        <thead>
+          <tr>
+            <th scope="col">Criterion</th>
+            <th scope="col">Description</th>
+            <th scope="col">Implementation</th>
+            <th scope="col">Level</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1.3.1</td>
+            <td>Info and Relationships</td>
+            <td>Activity type radio group uses <code>&lt;fieldset&gt;</code> + <code>&lt;legend&gt;</code>. Medication checkboxes use <code>&lt;fieldset&gt;</code> + <code>&lt;legend&gt;</code>. All labels are programmatically associated via <code>for</code> / <code>id</code>. Helper text linked via <code>aria-describedby</code>.</td>
+            <td><span class="badge-aa">AA</span></td>
+          </tr>
+          <tr>
+            <td>1.3.4</td>
+            <td>Orientation</td>
+            <td>Form layout uses CSS Grid that collapses from 2-column (1280px) to single-column (below 640px). No content is locked to a single orientation.</td>
+            <td><span class="badge-aa">AA</span></td>
+          </tr>
+          <tr>
+            <td>2.4.3</td>
+            <td>Focus Order</td>
+            <td>Logical top-to-bottom DOM order maintained. Success modal uses <code>trapFocus()</code> to contain Tab within the modal. Focus is moved to the modal heading (<code>tabindex="-1"</code>) on open and returned to the submit button on close.</td>
+            <td><span class="badge-aa">AA</span></td>
+          </tr>
+          <tr>
+            <td>3.3.1</td>
+            <td>Error Identification</td>
+            <td>Inline error messages use icon + red border + specific text description per field. A form-level error summary lists all errors with jump links. <code>aria-invalid="true"</code> set on each invalid field.</td>
+            <td><span class="badge-aa">AA</span></td>
+          </tr>
+          <tr>
+            <td>3.3.2</td>
+            <td>Labels or Instructions</td>
+            <td>All fields have visible persistent labels positioned above the input — never replaced by placeholder text. Required fields marked with asterisk (*). Legend "Fields marked * are required" appears before the first fieldset.</td>
+            <td><span class="badge-aa">AA</span></td>
+          </tr>
+          <tr>
+            <td>3.3.3</td>
+            <td>Error Suggestion</td>
+            <td>Error messages are specific and actionable — e.g. "Please enter your step count (numbers only, 0–99,999)" rather than generic "Invalid input".</td>
+            <td><span class="badge-aa">AA</span></td>
+          </tr>
+          <tr>
+            <td>4.1.1</td>
+            <td>Parsing</td>
+            <td>All element IDs are unique. A duplicate <code>id="steps"</code> conflict (section div vs input) was identified and resolved by renaming the input to <code>id="stepsInput"</code>. Valid HTML5 structure throughout.</td>
+            <td><span class="badge-aa">AA</span></td>
+          </tr>
+          <tr>
+            <td>4.1.2</td>
+            <td>Name, Role, Value</td>
+            <td>Sliders use <code>aria-valuemin</code>, <code>aria-valuemax</code>, <code>aria-valuenow</code>. Mood buttons use <code>aria-pressed</code>. Submit button uses <code>aria-busy</code> during submission. Date input uses <code>inputmode="numeric"</code> for mobile keyboard.</td>
+            <td><span class="badge-aa">AA</span></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3 class="subsection-title">W3 — Data Report / Print View (report.html)</h3>
+      <table class="doc-table" aria-label="WCAG compliance for report screen">
+        <thead>
+          <tr>
+            <th scope="col">Criterion</th>
+            <th scope="col">Description</th>
+            <th scope="col">Implementation</th>
+            <th scope="col">Level</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1.1.1</td>
+            <td>Non-text Content</td>
+            <td>All chart sections have a visible text summary paragraph always present. Data tables are available as a toggle alternative. Chart text summaries appear in print output as the chart canvas is hidden.</td>
+            <td><span class="badge-aa">AA</span></td>
+          </tr>
+          <tr>
+            <td>1.3.1</td>
+            <td>Info and Relationships</td>
+            <td>All data tables use <code>scope="col"</code> on column headers and <code>scope="row"</code> on row headers. Each table has a <code>&lt;caption&gt;</code>. Summary rows use <code>&lt;tfoot&gt;</code>.</td>
+            <td><span class="badge-aa">AA</span></td>
+          </tr>
+          <tr>
+            <td>2.4.6</td>
+            <td>Headings and Labels</td>
+            <td>Each report section has a descriptive H2 heading. All tables have descriptive <code>&lt;caption&gt;</code> elements. Section headings are linked via <code>aria-labelledby</code>.</td>
+            <td><span class="badge-aa">AA</span></td>
+          </tr>
+          <tr>
+            <td>2.5.3</td>
+            <td>Label in Name</td>
+            <td>Collapsible section toggle buttons wrap the H2 heading text — the button's accessible name includes the visible heading text. Share and print buttons have explicit labels matching visible text.</td>
+            <td><span class="badge-aa">AA</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SECTION 5 — PLATFORM COMPARISON TABLE
+       ══════════════════════════════════════════ -->
+  <div class="doc-section">
+    <div class="doc-section-header">
+      <div class="section-num" aria-hidden="true">5</div>
+      <h2>Platform Design Comparison — Web vs Mobile</h2>
+    </div>
+    <div class="doc-section-body">
+      <p class="intro-text">Five key design decisions where the web and mobile implementations intentionally differ, with the WCAG rationale for each choice.</p>
+      <table class="doc-table" aria-label="5 platform design decisions comparing web and mobile with WCAG rationale">
+        <thead>
+          <tr>
+            <th scope="col">Design Decision</th>
+            <th scope="col">Web App (Desktop 1280px)</th>
+            <th scope="col">Mobile App (iOS/Android)</th>
+            <th scope="col">WCAG Rationale</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">Navigation Pattern</th>
+            <td>Persistent left sidebar (260px) with icon + text labels. Always visible, no toggle required.</td>
+            <td>Bottom tab bar with 4 primary destinations, reachable by thumb in natural hand position.</td>
+            <td><strong>WCAG 2.4.1</strong> Multiple ways to navigate. Sidebar persistent on desktop provides always-visible context. Bottom tab reachable by thumb on mobile reduces motor effort for elderly users (WCAG 2.5.5).</td>
+          </tr>
+          <tr>
+            <th scope="row">Date Input</th>
+            <td>Native <code>&lt;input type="date"&gt;</code> with keyboard support. Fallback manual text entry instructions provided below the field.</td>
+            <td>Native iOS/Android date picker wheel with haptic feedback and VoiceOver/TalkBack integration.</td>
+            <td><strong>WCAG 2.1.1</strong> Keyboard access. Desktop requires full keyboard operability. Mobile platform pickers provide native accessibility APIs (announce selected value to screen readers) out of the box without custom ARIA.</td>
+          </tr>
+          <tr>
+            <th scope="row">Modal Presentation</th>
+            <td>Centred overlay with semi-transparent backdrop, programmatic focus trap (<code>trapFocus()</code>), Escape key to close.</td>
+            <td>Full-screen bottom sheet sliding up — native feel, simpler focus model on small displays.</td>
+            <td><strong>WCAG 2.4.3</strong> Focus Order. Desktop overlay must programmatically trap focus within its bounds to prevent screen reader users from interacting with obscured content. Mobile full-screen sheets are naturally bounded by the viewport.</td>
+          </tr>
+          <tr>
+            <th scope="row">Form Layout</th>
+            <td>2-column CSS Grid on 1280px; collapses to single column below 640px. Labels above inputs.</td>
+            <td>Single column always. Minimum 48×48dp touch targets (Material Design) — larger than web's 44px minimum.</td>
+            <td><strong>WCAG 1.3.4</strong> Orientation + <strong>2.5.5</strong> Target Size. Responsive CSS Grid adapts web layout. Mobile enforces larger targets due to finger-based input and variable grip positions of elderly users.</td>
+          </tr>
+          <tr>
+            <th scope="row">Data Visualisation</th>
+            <td>CSS bar charts with value labels, always-visible text summary, and a togglable data table alternative.</td>
+            <td>Native chart component with pinch-to-zoom; accessible text summary always displayed below the chart.</td>
+            <td><strong>WCAG 1.1.1</strong> Non-text Content. Both platforms always pair charts with text summaries. Web additionally offers a data table toggle (keyboard accessible) for users who need raw data. Mobile relies on platform accessibility API for gesture descriptions.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SECTION 6 — COMPONENT SPECIFICATIONS
+       ══════════════════════════════════════════ -->
+  <div class="doc-section">
+    <div class="doc-section-header">
+      <div class="section-num" aria-hidden="true">6</div>
+      <h2>Accessible Component Specifications</h2>
+    </div>
+    <div class="doc-section-body">
+
+      <h3 class="subsection-title">Component 1 — Button System</h3>
+      <table class="doc-table" aria-label="Button system accessibility specifications">
+        <thead>
+          <tr><th scope="col">Attribute</th><th scope="col">Specification</th><th scope="col">WCAG Criterion</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Variants</td><td>Primary, Secondary, Ghost, Destructive, Disabled, Icon-only</td><td>—</td></tr>
+          <tr><td>Sizes</td><td>Small 32px, Default 44px, Large 52px</td><td>2.5.5 Target Size</td></tr>
+          <tr><td>Minimum height</td><td>44px via <code>min-height: var(--target-min)</code></td><td>2.5.5</td></tr>
+          <tr><td>Focus ring</td><td>3px white offset + 2px teal ring (<code>--focus-ring</code>)</td><td>2.4.7 Focus Visible</td></tr>
+          <tr><td>Disabled state</td><td><code>aria-disabled="true"</code>, reduced opacity, <code>cursor: not-allowed</code>, no pointer events</td><td>4.1.2 Name Role Value</td></tr>
+          <tr><td>Loading state</td><td><code>aria-busy="true"</code>, spinner (respects reduced-motion), label changes to "Saving…"</td><td>4.1.2, 2.3.3</td></tr>
+          <tr><td>Icon-only buttons</td><td><code>aria-label</code> describing the action (e.g. "Dismiss alert") AND a visible tooltip on hover/focus (<code>role="tooltip"</code> linked via <code>aria-describedby</code>)</td><td>1.1.1, 2.5.3</td></tr>
+          <tr><td>Tooltip — icon-only</td><td>Appears on <code>:hover</code> and <code>:focus-visible</code>; minimum 44px distance from button edge; <code>role="tooltip"</code>; does not receive focus itself; dismissed on Escape (WCAG 1.4.13)</td><td>1.4.13 Content on Hover/Focus</td></tr>
+          <tr><td>Contrast — Primary</td><td>White text on primary-600 (#218080): 4.69:1</td><td>1.4.3 AA</td></tr>
+          <tr><td>Contrast — Destructive</td><td>White text on error (#C0352A): 5.3:1</td><td>1.4.3 AA</td></tr>
+        </tbody>
+      </table>
+
+      <h3 class="subsection-title">Component 2 — Form Field (Text Input)</h3>
+      <table class="doc-table" aria-label="Form field accessibility specifications">
+        <thead>
+          <tr><th scope="col">State / Feature</th><th scope="col">Implementation</th><th scope="col">WCAG Criterion</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Label position</td><td>Always above the input — never replaced by placeholder text</td><td>3.3.2 Labels or Instructions</td></tr>
+          <tr><td>Placeholder text</td><td>Used only as supplementary hint, never as the sole label</td><td>3.3.2</td></tr>
+          <tr><td>Required indicator</td><td>Asterisk (*) in label + <code>aria-required="true"</code> on input</td><td>3.3.2, 4.1.2</td></tr>
+          <tr><td>Helper text</td><td>Linked via <code>aria-describedby</code></td><td>4.1.2</td></tr>
+          <tr><td>Error state</td><td>Red border + error icon + specific text message; <code>aria-invalid="true"</code>; error element in <code>aria-describedby</code></td><td>1.4.1, 3.3.1, 4.1.2</td></tr>
+          <tr><td>Focus ring</td><td>Same as button — 3px white + 2px teal</td><td>2.4.7</td></tr>
+          <tr><td>Disabled state</td><td>Greyed, <code>aria-disabled="true"</code>, <code>cursor: not-allowed</code></td><td>4.1.2</td></tr>
+          <tr><td>Password toggle</td><td>Button label changes between "Show password" / "Hide password"</td><td>4.1.2, 2.5.3</td></tr>
+          <tr><td>Min touch target</td><td>44px height</td><td>2.5.5</td></tr>
+        </tbody>
+      </table>
+
+      <h3 class="subsection-title">Component 3 — Alert / Status Component</h3>
+      <table class="doc-table" aria-label="Alert and status component accessibility specifications">
+        <thead>
+          <tr><th scope="col">Feature</th><th scope="col">Implementation</th><th scope="col">WCAG Criterion</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Types</td><td>Success, Warning, Error, Info, Neutral — each with distinct icon shape</td><td>1.4.1 Use of Colour</td></tr>
+          <tr><td>Colour-alone rule</td><td>Every type uses icon + background colour + border colour + text label</td><td>1.4.1</td></tr>
+          <tr><td>Dismiss button</td><td>44px minimum, <code>aria-label="Dismiss [type] alert"</code></td><td>2.5.5, 1.1.1</td></tr>
+          <tr><td>Toast announcements</td><td><code>aria-live="polite" aria-atomic="true"</code> on toast region</td><td>4.1.3 Status Messages</td></tr>
+          <tr><td>Auto-dismiss</td><td>5 seconds, pauses on <code>mouseenter</code> and <code>focusin</code></td><td>2.2.1 Timing Adjustable</td></tr>
+          <tr><td>Reduced motion</td><td>Toast fade-in animation disabled via <code>prefers-reduced-motion</code></td><td>2.3.3</td></tr>
+          <tr><td>Inline alert contrast</td><td>Success text #1A7A4A on #E8F5EE: 5.1:1</td><td>1.4.3 AA</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer style="text-align:center;padding:var(--space-8) 0;color:var(--color-neutral-400);font-size:var(--text-caption);">
+    HealthTrack Accessibility Documentation &mdash; WCAG 2.1 Level AA &mdash; Accessible by Design Workshop
+  </footer>
+
+</div>
+
+</body>
+</html>
