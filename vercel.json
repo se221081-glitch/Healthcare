@@ -5,7 +5,7 @@
     {
       "source": "/",
       "destination": "/welcome.html",
-      "type": 302
+      "statusCode": 302
     }
   ]
 }
