@@ -1,0 +1,1104 @@
+<!DOCTYPE html>
+<html lang="en">
+<!--
+  HealthTrack – W2: Health Log Form (Daily Log)
+  WCAG 2.1 Level AA
+
+  WCAG compliance notes:
+  3.3.2 – Every input has a visible persistent label above the field (never placeholder-only)
+  3.3.1 – Error messages are specific, in text, with icon – not just red border
+  3.3.3 – Form-level error summary at top with links to each field
+  2.1.1 – Date picker is keyboard-operable; text alternative provided
+  1.4.1 – Required fields use asterisk + legend, never colour alone
+  1.4.11 – Input borders 3:1 against background
+  4.1.2 – Slider has aria-valuemin/max/now + numeric readout
+  2.4.7 – All interactive elements have visible focus rings
+  2.5.5 – All targets min 44×44px
+  1.4.3 – All text ≥ 4.5:1 contrast
+-->
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Log Today's Health – HealthTrack</title>
+  <meta name="description" content="Log your daily health metrics including steps, water intake, sleep, mood, and medications.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="tokens.css">
+  <link rel="stylesheet" href="print.css">
+  <style>
+    /* ── Form step progress ─────────────────────────────────── */
+    .form-step.done .form-step-indicator,
+    .form-step.completed .form-step-indicator {
+      background: var(--color-success, #16a34a);
+      color: #fff;
+      border-color: var(--color-success, #16a34a);
+    }
+    .form-step.active .form-step-label {
+      font-weight: var(--weight-bold, 700);
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+    .form-step.active .form-step-indicator {
+      background: var(--color-primary-600);
+      color: #fff;
+      border-color: var(--color-primary-600);
+    }
+
+    /* ── Range slider polish ────────────────────────────────── */
+    .form-range {
+      -webkit-appearance: none;
+      appearance: none;
+      height: 6px;
+      border-radius: var(--radius-full, 9999px);
+      background: var(--color-neutral-200, #e5e7eb);
+      outline: none;
+      cursor: pointer;
+      width: 100%;
+    }
+    .form-range::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 22px;
+      height: 22px;
+      border-radius: var(--radius-full, 9999px);
+      background: var(--color-primary-600, #0d9488);
+      cursor: pointer;
+      border: 3px solid #fff;
+      box-shadow: var(--shadow-sm, 0 1px 3px rgba(0,0,0,.12));
+    }
+    .form-range::-moz-range-thumb {
+      width: 22px;
+      height: 22px;
+      border-radius: var(--radius-full, 9999px);
+      background: var(--color-primary-600, #0d9488);
+      cursor: pointer;
+      border: 3px solid #fff;
+      box-shadow: var(--shadow-sm, 0 1px 3px rgba(0,0,0,.12));
+    }
+    .form-range:focus {
+      box-shadow: var(--focus-ring, 0 0 0 3px rgba(13,148,136,.35));
+    }
+
+    /* ── Mood button min touch target (WCAG 2.5.5) ─────────────── */
+    .mood-btn {
+      min-width: 44px;
+      min-height: 44px;
+    }
+
+    /* ── Medication row – full-row click target ─────────────── */
+    .med-item {
+      cursor: pointer;
+      position: relative;
+    }
+    .med-item:has(.med-check:checked) {
+      border-color: var(--color-primary-500, #14b8a6);
+      background: var(--color-primary-50, #f0fdfa);
+    }
+    .med-item:has(.med-check:checked) .med-label {
+      color: var(--color-primary-700, #0f766e);
+    }
+
+    /* ── Form section fade transition ───────────────────────── */
+    .form-section {
+      animation: sectionFadeIn 250ms ease both;
+    }
+    @keyframes sectionFadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── Character count – near-limit state ─────────────────── */
+    .form-char-count.near-limit {
+      color: var(--color-warning, #d97706);
+      font-weight: var(--weight-semibold, 600);
+    }
+    .form-char-count.at-limit {
+      color: var(--color-error, #dc2626);
+      font-weight: var(--weight-semibold, 600);
+    }
+
+    /* ── Submit button prominence ───────────────────────────── */
+    #submitBtn {
+      min-width: 220px;
+    }
+    #submitBtn[aria-busy="true"] {
+      opacity: .75;
+      cursor: wait;
+      pointer-events: none;
+    }
+
+    .med-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-3) var(--space-4);
+      background: var(--color-neutral-50);
+      border: 1.5px solid var(--color-neutral-200);
+      border-radius: var(--radius-lg);
+      transition: border-color var(--transition-fast);
+    }
+    .med-item:focus-within {
+      border-color: var(--color-primary-500);
+    }
+    .med-check {
+      width: 22px; height: 22px;
+      accent-color: var(--color-primary-600);
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .med-check:focus-visible {
+      outline: 3px solid var(--color-primary-600);
+      outline-offset: 2px;
+      border-radius: 3px;
+    }
+    .med-label {
+      flex: 1;
+      font-size: var(--text-body);
+      font-weight: var(--weight-medium);
+      color: var(--color-neutral-700);
+      cursor: pointer;
+    }
+    .med-time {
+      font-size: var(--text-body-s);
+      color: var(--color-neutral-400);
+    }
+
+    /* Keyboard type hint chips */
+    .input-hint {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: var(--text-caption);
+      color: var(--color-neutral-400);
+      background: var(--color-neutral-100);
+      padding: 2px 8px;
+      border-radius: var(--radius-full);
+      margin-top: var(--space-1);
+    }
+
+    .success-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15,36,68,0.6);
+      z-index: 500;
+      align-items: center;
+      justify-content: center;
+    }
+    .success-overlay.show {
+      display: flex;
+    }
+    .success-modal {
+      background: white;
+      border-radius: var(--radius-2xl);
+      padding: var(--space-10) var(--space-8);
+      max-width: 440px;
+      width: 90%;
+      text-align: center;
+      box-shadow: var(--shadow-xl);
+      animation: popIn 200ms ease;
+    }
+    @keyframes popIn {
+      from { transform: scale(0.92); opacity: 0; }
+      to   { transform: scale(1);    opacity: 1; }
+    }
+    .success-icon-wrap {
+      width: 72px; height: 72px;
+      background: var(--color-success-bg);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto var(--space-5);
+      color: var(--color-success);
+    }
+    .mood-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: var(--space-2);
+    }
+    .mood-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space-1);
+      padding: var(--space-3) var(--space-2);
+      border: 2px solid var(--color-neutral-200);
+      border-radius: var(--radius-lg);
+      background: var(--color-bg-surface);
+      cursor: pointer;
+      font-family: var(--font-ui);
+      min-height: var(--target-min);
+      transition: border-color var(--transition-fast), background var(--transition-fast);
+    }
+    .mood-btn:hover { border-color: var(--color-primary-400); background: var(--color-primary-50); }
+    .mood-btn:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+    .mood-btn.selected {
+      border-color: var(--color-primary-600);
+      background: var(--color-primary-50);
+      box-shadow: 0 0 0 2px var(--color-primary-600);
+    }
+    .mood-btn.selected .mood-label {
+      color: var(--color-primary-700);
+      font-weight: var(--weight-bold, 700);
+    }
+    .mood-btn .mood-emoji { font-size: 1.375rem; line-height: 1; }
+    .mood-btn .mood-label { font-size: 0.6875rem; font-weight: var(--weight-semibold); color: var(--color-neutral-600); }
+  </style>
+</head>
+<body>
+  <!-- WCAG 2.4.1: Skip link -->
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <div class="sidebar-overlay" aria-hidden="true" id="sidebarOverlay"></div>
+
+  <!-- Live region for success/error announcements -->
+  <div aria-live="assertive" aria-atomic="true" class="sr-only" id="form-live-region"></div>
+
+  <div class="app-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar" aria-label="Main navigation" id="mainSidebar">
+      <a href="dashboard.html" class="sidebar-brand" aria-label="HealthTrack – go to dashboard">
+        <div class="brand-icon" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+        </div>
+        <div>
+          <div class="brand-name">HealthTrack</div>
+          <div class="brand-tagline">Wellness Platform</div>
+        </div>
+      </a>
+      <nav class="sidebar-nav" aria-label="Site navigation">
+        <p class="nav-section-label" aria-hidden="true">Overview</p>
+        <a href="welcome.html" class="nav-item">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          Home
+        </a>
+        <a href="dashboard.html" class="nav-item">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          Dashboard
+        </a>
+        <a href="health-log.html" class="nav-item" aria-current="page">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Log Health
+        </a>
+        <p class="nav-section-label" aria-hidden="true">Health</p>
+        <a href="#" class="nav-item">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          Trends &amp; Charts
+        </a>
+        <a href="#" class="nav-item">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          Medications
+        </a>
+        <a href="#" class="nav-item">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
+          Wellness Library
+        </a>
+        <p class="nav-section-label" aria-hidden="true">Reports</p>
+        <a href="report.html" class="nav-item">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          Reports
+        </a>
+        <a href="#" class="nav-item">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+          Share with Provider
+        </a>
+      </nav>
+      <div class="sidebar-footer">
+        <a href="#" class="sidebar-user" aria-label="User settings for Margaret Chen">
+          <div class="user-avatar" aria-hidden="true">MC</div>
+          <div>
+            <div class="user-name">Margaret Chen</div>
+            <div class="user-role">Patient</div>
+          </div>
+        </a>
+      </div>
+    </aside>
+
+    <div class="main-content">
+      <header class="topbar" role="banner">
+        <button class="mobile-menu-btn" aria-label="Open navigation menu" aria-expanded="false" aria-controls="mainSidebar" type="button" id="mobileMenuBtn">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <div class="topbar-title">
+          <h1>Log Today's Health</h1>
+          <p>Wednesday, 25 June 2026</p>
+        </div>
+        <div class="topbar-actions">
+          <a href="dashboard.html" class="btn btn-ghost">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+            Back to Dashboard
+          </a>
+        </div>
+      </header>
+
+      <main id="main-content" class="page-content" tabindex="-1" role="main" aria-label="Daily health log form">
+
+        <!-- ══════════════════════
+             H2: Progress steps
+             ══════════════════════ -->
+        <nav class="form-steps" aria-label="Form sections progress">
+          <div class="form-step done" aria-label="Step 1 of 5: Date – completed">
+            <div class="form-step-indicator" aria-hidden="true">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <span class="form-step-label">Date</span>
+          </div>
+          <div class="form-step-line done" aria-hidden="true"></div>
+          <div class="form-step active" aria-label="Step 2 of 5: Activity – current" aria-current="step">
+            <div class="form-step-indicator" aria-hidden="true">2</div>
+            <span class="form-step-label">Activity</span>
+          </div>
+          <div class="form-step-line" aria-hidden="true"></div>
+          <div class="form-step" aria-label="Step 3 of 5: Nutrition – not started">
+            <div class="form-step-indicator" aria-hidden="true">3</div>
+            <span class="form-step-label">Nutrition</span>
+          </div>
+          <div class="form-step-line" aria-hidden="true"></div>
+          <div class="form-step" aria-label="Step 4 of 5: Wellbeing – not started">
+            <div class="form-step-indicator" aria-hidden="true">4</div>
+            <span class="form-step-label">Wellbeing</span>
+          </div>
+          <div class="form-step-line" aria-hidden="true"></div>
+          <div class="form-step" aria-label="Step 5 of 5: Medications – not started">
+            <div class="form-step-indicator" aria-hidden="true">5</div>
+            <span class="form-step-label">Meds</span>
+          </div>
+        </nav>
+
+        <!-- ══════════════════════
+             FORM ERROR SUMMARY
+             WCAG 3.3.1 & 3.3.3
+             ══════════════════════ -->
+        <div
+          class="form-error-summary"
+          id="errorSummary"
+          role="alert"
+          aria-labelledby="errorSummaryTitle"
+          tabindex="-1"
+          style="display:none"
+        >
+          <div class="form-error-summary-title" id="errorSummaryTitle">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            There are errors in your form — please correct them to continue
+          </div>
+          <ul id="errorSummaryList" aria-label="List of form errors"></ul>
+        </div>
+
+        <!-- WCAG 3.3.2: required fields legend – asterisk with explanation -->
+        <p class="form-legend">Fields marked <strong aria-hidden="true">*</strong><span class="sr-only">with an asterisk</span> are required.</p>
+
+        <form id="healthLogForm" novalidate aria-label="Daily health log" autocomplete="on">
+
+          <!-- ══════════════
+               SECTION 1: DATE
+               ══════════════ -->
+          <div class="form-section">
+            <h2 class="form-section-title">
+              <div class="form-section-icon" style="background:var(--color-primary-50)" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary-600)" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              </div>
+              Date &amp; Log Details
+            </h2>
+
+            <div class="form-grid">
+              <!-- Date field – keyboard-operable + manual text input – WCAG 2.1.1 -->
+              <div class="form-group">
+                <label class="form-label" for="logDate">
+                  Log Date <span class="form-required" aria-hidden="true">*</span>
+                  <span class="sr-only">(required)</span>
+                </label>
+                <!-- WCAG 2.1.1: native date picker (keyboard-operable) -->
+                <input
+                  class="form-input"
+                  type="date"
+                  id="logDate"
+                  name="logDate"
+                  value=""
+                  required
+                  aria-required="true"
+                  aria-describedby="logDateHelper logDateError"
+                  inputmode="numeric"
+                >
+                <p class="form-helper" id="logDateHelper">
+                  You can also type the date manually in YYYY-MM-DD format (keyboard accessible).
+                </p>
+                <div class="form-error-msg" id="logDateError" role="alert" aria-live="polite" style="display:none">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                  <span class="error-text">Please select or enter a valid date.</span>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="logTime">Time of Entry</label>
+                <input
+                  class="form-input"
+                  type="time"
+                  id="logTime"
+                  name="logTime"
+                  value=""
+                  aria-describedby="logTimeHelper"
+                  inputmode="numeric"
+                >
+                <p class="form-helper" id="logTimeHelper">Optional — defaults to current time.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- ══════════════
+               SECTION 2: ACTIVITY
+               id="steps" for anchor
+               ══════════════ -->
+          <div class="form-section" id="steps">
+            <h2 class="form-section-title">
+              <div class="form-section-icon" style="background:#EFF6FF" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+              </div>
+              Physical Activity
+            </h2>
+
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label" for="stepsInput">
+                  Steps Today <span class="form-required" aria-hidden="true">*</span>
+                  <span class="sr-only">(required)</span>
+                </label>
+                <!-- inputmode="numeric" specifies numeric keyboard on mobile -->
+                <input
+                  class="form-input"
+                  type="number"
+                  id="stepsInput"
+                  name="steps"
+                  placeholder="e.g. 7500"
+                  min="0"
+                  max="99999"
+                  step="1"
+                  required
+                  aria-required="true"
+                  aria-describedby="stepsHelper stepsInputError"
+                  inputmode="numeric"
+                  autocomplete="off"
+                >
+                <p class="form-helper" id="stepsHelper">Enter the total steps from your pedometer or fitness tracker.</p>
+                <div class="form-error-msg" id="stepsInputError" role="alert" aria-live="polite" style="display:none">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                  <span class="error-text">Please enter your step count (0–99,999).</span>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="activeMinutes">Active Minutes</label>
+                <input
+                  class="form-input"
+                  type="number"
+                  id="activeMinutes"
+                  name="activeMinutes"
+                  placeholder="e.g. 45"
+                  min="0"
+                  max="1440"
+                  step="1"
+                  aria-describedby="activeMinHelper"
+                  inputmode="numeric"
+                >
+                <p class="form-helper" id="activeMinHelper">Total minutes of moderate or vigorous activity.</p>
+              </div>
+
+              <div class="form-group span-2">
+                <label class="form-label" for="activityType">Primary Activity</label>
+                <div class="form-select-wrapper">
+                  <select
+                    class="form-select"
+                    id="activityType"
+                    name="activityType"
+                    aria-describedby="activityTypeHelper"
+                  >
+                    <option value="">Select an activity (optional)</option>
+                    <option value="walking">Walking</option>
+                    <option value="running">Running / Jogging</option>
+                    <option value="cycling">Cycling</option>
+                    <option value="swimming">Swimming</option>
+                    <option value="yoga">Yoga / Stretching</option>
+                    <option value="strength">Strength Training</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+                <p class="form-helper" id="activityTypeHelper">Choose your main physical activity for today.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- ══════════════
+               SECTION 3: NUTRITION
+               id="water"
+               ══════════════ -->
+          <div class="form-section" id="water">
+            <h2 class="form-section-title">
+              <div class="form-section-icon" style="background:#EFF6FF" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 2.69l5.66 5.66a8 8 0 11-11.31 0z"/></svg>
+              </div>
+              Nutrition &amp; Hydration
+            </h2>
+
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label" for="waterLitres">
+                  Water Intake (litres) <span class="form-required" aria-hidden="true">*</span>
+                  <span class="sr-only">(required)</span>
+                </label>
+                <input
+                  class="form-input"
+                  type="number"
+                  id="waterLitres"
+                  name="waterLitres"
+                  placeholder="e.g. 2.0"
+                  min="0"
+                  max="10"
+                  step="0.1"
+                  required
+                  aria-required="true"
+                  aria-describedby="waterHelper waterError"
+                  inputmode="decimal"
+                >
+                <p class="form-helper" id="waterHelper">Enter litres consumed today (e.g. 2.0). Goal: 2.5L.</p>
+                <div class="form-error-msg" id="waterError" role="alert" aria-live="polite" style="display:none">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                  <span class="error-text">Please enter your water intake in litres (e.g. 1.5).</span>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="mealsCount">Number of Meals</label>
+                <div class="form-select-wrapper">
+                  <select class="form-select" id="mealsCount" name="mealsCount">
+                    <option value="">Select</option>
+                    <option value="1">1 meal</option>
+                    <option value="2">2 meals</option>
+                    <option value="3" selected>3 meals</option>
+                    <option value="4">4 meals</option>
+                    <option value="5+">5 or more</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group span-2">
+                <label class="form-label" for="nutritionNotes">Nutrition Notes</label>
+                <textarea
+                  class="form-textarea"
+                  id="nutritionNotes"
+                  name="nutritionNotes"
+                  rows="3"
+                  placeholder="Any notes about your diet today (optional)…"
+                  aria-describedby="nutritionNotesCount"
+                  maxlength="500"
+                ></textarea>
+                <div style="display:flex;justify-content:space-between;margin-top:var(--space-1)">
+                  <span class="form-helper">Optional. Mention any foods, supplements, or dietary changes.</span>
+                  <span class="form-char-count" id="nutritionNotesCount" aria-live="polite" aria-label="Characters remaining">500 / 500</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ══════════════
+               SECTION 4: SLEEP & MOOD
+               id="sleep" + id="mood"
+               Sliders with numeric readout – WCAG 4.1.2
+               ══════════════ -->
+          <div class="form-section" id="sleep">
+            <h2 class="form-section-title">
+              <div class="form-section-icon" style="background:#F5F3FF" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+              </div>
+              Sleep &amp; Wellbeing
+            </h2>
+
+            <div class="form-grid">
+              <!-- Sleep hours – number keyboard -->
+              <div class="form-group">
+                <label class="form-label" for="sleepHours">
+                  Sleep Duration (hours) <span class="form-required" aria-hidden="true">*</span>
+                  <span class="sr-only">(required)</span>
+                </label>
+                <input
+                  class="form-input"
+                  type="number"
+                  id="sleepHours"
+                  name="sleepHours"
+                  placeholder="e.g. 7.5"
+                  min="0"
+                  max="24"
+                  step="0.5"
+                  required
+                  aria-required="true"
+                  aria-describedby="sleepHelper sleepError"
+                  inputmode="decimal"
+                >
+                <p class="form-helper" id="sleepHelper">Hours slept last night. Include naps.</p>
+                <div class="form-error-msg" id="sleepError" role="alert" aria-live="polite" style="display:none">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                  <span class="error-text">Please enter your sleep duration (0–24 hours).</span>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="sleepQuality">Sleep Quality</label>
+                <div class="form-select-wrapper">
+                  <select class="form-select" id="sleepQuality" name="sleepQuality">
+                    <option value="">Select quality</option>
+                    <option value="poor">Poor — frequently woke up</option>
+                    <option value="fair">Fair — woke up occasionally</option>
+                    <option value="good" selected>Good — mostly restful</option>
+                    <option value="excellent">Excellent — slept through</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Mood scale – slider + numeric readout (WCAG 4.1.2, never colour alone for level) -->
+              <div class="form-group span-2" id="mood">
+                <label class="form-label" for="moodScale">Mood Today (1–10)</label>
+                <div class="range-field">
+                  <input
+                    class="form-range"
+                    type="range"
+                    id="moodScale"
+                    name="moodScale"
+                    min="1"
+                    max="10"
+                    step="1"
+                    value="7"
+                    data-output="moodValue"
+                    aria-valuemin="1"
+                    aria-valuemax="10"
+                    aria-valuenow="7"
+                    aria-label="Mood scale: 1 is very low, 10 is excellent"
+                  >
+                  <!-- Numeric readout alongside slider – WCAG 4.1.2 -->
+                  <div class="range-value" id="moodValue" aria-live="polite" aria-label="Current mood value">7</div>
+                </div>
+                <div class="range-labels" aria-hidden="true">
+                  <span>1 – Very low</span>
+                  <span>5 – Neutral</span>
+                  <span>10 – Excellent</span>
+                </div>
+                <p class="form-helper mt-2">Move the slider or use arrow keys to select your mood level.</p>
+
+                <!-- Visual mood selector (complementary to slider) -->
+                <fieldset style="border:none;padding:0;margin-top:var(--space-4)">
+                  <legend class="form-label" style="margin-bottom:var(--space-3)">Or choose a mood icon:</legend>
+                  <div class="mood-grid" role="group" aria-label="Mood icons">
+                    <button type="button" class="mood-btn" aria-label="Very sad – mood 1 to 2" aria-pressed="false" data-mood="2">
+                      <span class="mood-emoji" aria-hidden="true">😢</span>
+                      <span class="mood-label">Very sad</span>
+                    </button>
+                    <button type="button" class="mood-btn" aria-label="Sad – mood 3 to 4" aria-pressed="false" data-mood="4">
+                      <span class="mood-emoji" aria-hidden="true">😕</span>
+                      <span class="mood-label">Sad</span>
+                    </button>
+                    <button type="button" class="mood-btn" aria-label="Neutral – mood 5" aria-pressed="false" data-mood="5">
+                      <span class="mood-emoji" aria-hidden="true">😐</span>
+                      <span class="mood-label">Neutral</span>
+                    </button>
+                    <button type="button" class="mood-btn selected" aria-label="Good – mood 7 to 8" aria-pressed="true" data-mood="7">
+                      <span class="mood-emoji" aria-hidden="true">🙂</span>
+                      <span class="mood-label">Good</span>
+                    </button>
+                    <button type="button" class="mood-btn" aria-label="Excellent – mood 9 to 10" aria-pressed="false" data-mood="9">
+                      <span class="mood-emoji" aria-hidden="true">😄</span>
+                      <span class="mood-label">Excellent</span>
+                    </button>
+                  </div>
+                </fieldset>
+              </div>
+
+              <!-- Energy level slider -->
+              <div class="form-group span-2">
+                <label class="form-label" for="energyScale">Energy Level (1–10)</label>
+                <div class="range-field">
+                  <input
+                    class="form-range"
+                    type="range"
+                    id="energyScale"
+                    name="energyScale"
+                    min="1"
+                    max="10"
+                    step="1"
+                    value="6"
+                    data-output="energyValue"
+                    aria-valuemin="1"
+                    aria-valuemax="10"
+                    aria-valuenow="6"
+                    aria-label="Energy level: 1 is exhausted, 10 is very energetic"
+                  >
+                  <div class="range-value" id="energyValue" aria-live="polite" aria-label="Current energy value">6</div>
+                </div>
+                <div class="range-labels" aria-hidden="true">
+                  <span>1 – Exhausted</span>
+                  <span>5 – Moderate</span>
+                  <span>10 – Very energetic</span>
+                </div>
+              </div>
+
+              <div class="form-group span-2">
+                <label class="form-label" for="wellnessNotes">Wellbeing Notes</label>
+                <textarea
+                  class="form-textarea"
+                  id="wellnessNotes"
+                  name="wellnessNotes"
+                  rows="3"
+                  placeholder="Any thoughts, feelings, or symptoms worth noting (optional)…"
+                  aria-describedby="wellnessNotesHelper wellnessNotesCount"
+                  maxlength="500"
+                ></textarea>
+                <div style="display:flex;justify-content:space-between;margin-top:var(--space-1)">
+                  <p class="form-helper" id="wellnessNotesHelper">Optional. Include any notable physical symptoms or mental health observations.</p>
+                  <span class="form-char-count" id="wellnessNotesCount" aria-live="polite" aria-label="Characters remaining">500 / 500</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ══════════════
+               SECTION 5: MEDICATIONS
+               id="meds"
+               Checkboxes with visible labels – WCAG 3.3.2
+               ══════════════ -->
+          <div class="form-section" id="meds">
+            <h2 class="form-section-title">
+              <div class="form-section-icon" style="background:#FFF7ED" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#EA580C" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M10.5 20H4a2 2 0 01-2-2V5c0-1.1.9-2 2-2h3.93a2 2 0 011.66.9l.82 1.2a2 2 0 001.66.9H20a2 2 0 012 2v2"/><circle cx="17" cy="17" r="5"/><path d="M17 14v6M14 17h6"/></svg>
+              </div>
+              Medications
+            </h2>
+
+            <fieldset>
+              <legend class="sr-only">Mark medications taken today</legend>
+              <div style="display:flex;flex-direction:column;gap:var(--space-3)" role="group" aria-label="Medication checklist">
+
+                <div class="med-item">
+                  <input class="med-check" type="checkbox" id="med1" name="medications" value="metformin" checked aria-describedby="med1-time">
+                  <label class="med-label" for="med1">Metformin 500mg</label>
+                  <span class="med-time" id="med1-time">Morning — 8:00 AM</span>
+                </div>
+
+                <div class="med-item">
+                  <input class="med-check" type="checkbox" id="med2" name="medications" value="lisinopril" aria-describedby="med2-time">
+                  <label class="med-label" for="med2">Lisinopril 10mg</label>
+                  <span class="med-time" id="med2-time">Morning — 8:00 AM</span>
+                </div>
+
+                <div class="med-item">
+                  <input class="med-check" type="checkbox" id="med3" name="medications" value="vitd" aria-describedby="med3-time">
+                  <label class="med-label" for="med3">Vitamin D 1000 IU</label>
+                  <span class="med-time" id="med3-time">With breakfast</span>
+                </div>
+
+                <div class="med-item">
+                  <input class="med-check" type="checkbox" id="med4" name="medications" value="metformin-pm" aria-describedby="med4-time">
+                  <label class="med-label" for="med4">Metformin 500mg (evening dose)</label>
+                  <span class="med-time" id="med4-time">Evening — 6:00 PM</span>
+                </div>
+
+              </div>
+            </fieldset>
+
+            <div class="form-group mt-4">
+              <label class="form-label" for="medNotes">Medication Notes</label>
+              <textarea
+                class="form-textarea"
+                id="medNotes"
+                name="medNotes"
+                rows="2"
+                placeholder="Any missed doses, side effects, or changes to note (optional)…"
+                maxlength="300"
+              ></textarea>
+            </div>
+          </div>
+
+          <!-- ══════════════
+               FORM ACTIONS
+               ══════════════ -->
+          <div style="display:flex;flex-wrap:wrap;gap:var(--space-4);align-items:center;justify-content:flex-end;margin-top:var(--space-8)">
+            <a href="dashboard.html" class="btn btn-ghost">Cancel</a>
+            <button type="button" class="btn btn-secondary" id="saveDraftBtn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+              Save Draft
+            </button>
+            <button type="submit" class="btn btn-primary btn-lg" id="submitBtn" aria-busy="false">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+              <span id="submitBtnLabel">Save Today's Log</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true" style="margin-left:2px"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+          </div>
+
+        </form>
+
+      </main>
+
+      <footer class="page-content" style="padding-top:0;padding-bottom:var(--space-6)" role="contentinfo">
+        <hr class="divider">
+        <p class="text-small text-muted">
+          HealthTrack &copy; 2026 &mdash; <a href="#">Privacy Policy</a> &mdash; <a href="#">Accessibility Statement</a>
+        </p>
+      </footer>
+    </div>
+  </div>
+
+  <!-- Success modal – focus managed per WCAG focus management -->
+  <div class="success-overlay" id="successOverlay" role="dialog" aria-modal="true" aria-labelledby="successTitle" aria-describedby="successDesc">
+    <div class="success-modal">
+      <!-- Large SVG checkmark-in-circle for polished success state -->
+      <div class="success-icon-wrap" aria-hidden="true" style="width:88px;height:88px;background:var(--color-success-bg,#dcfce7);margin-bottom:var(--space-6)">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <circle cx="12" cy="12" r="12" fill="var(--color-success,#16a34a)" opacity=".15"/>
+          <circle cx="12" cy="12" r="10" fill="var(--color-success,#16a34a)"/>
+          <polyline points="6 12 10 16 18 8" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <h2 id="successTitle" tabindex="-1" style="font-size:var(--text-h2);margin-bottom:var(--space-2);outline:none">Health Log Saved!</h2>
+      <p style="color:var(--color-neutral-500);font-size:var(--text-body-s);margin-bottom:var(--space-4)">Great work staying on top of your health today.</p>
+      <!-- Summary of what was logged -->
+      <div id="successSummary" aria-label="Summary of logged data" style="background:var(--color-neutral-50,#f9fafb);border:1.5px solid var(--color-neutral-200,#e5e7eb);border-radius:var(--radius-lg);padding:var(--space-4);margin-bottom:var(--space-6);text-align:left;font-size:var(--text-body-s)">
+        <p id="successDesc" style="color:var(--color-neutral-600);margin:0 0 var(--space-2)">
+          <strong>Date logged:</strong> <span id="successDate">Wednesday, 25 June 2026</span>
+        </p>
+        <p style="color:var(--color-neutral-600);margin:0 0 var(--space-2)">
+          <strong>Steps:</strong> <span id="successSteps">-</span>
+        </p>
+        <p style="color:var(--color-neutral-600);margin:0 0 var(--space-2)">
+          <strong>Water intake:</strong> <span id="successWater">-</span>
+        </p>
+        <p style="color:var(--color-neutral-600);margin:0">
+          <strong>Sleep:</strong> <span id="successSleep">-</span>
+        </p>
+      </div>
+      <div style="display:flex;gap:var(--space-3);justify-content:center;flex-wrap:wrap">
+        <a href="dashboard.html" class="btn btn-primary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          View Dashboard
+        </a>
+        <button type="button" class="btn btn-ghost" id="closeSuccessBtn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Log Another Day
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="main.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // ── Default date/time to right now ─────────────────────
+      const _now  = new Date();
+      const _pad  = n => String(n).padStart(2, '0');
+      const _yyyy = _now.getFullYear();
+      const _mm   = _pad(_now.getMonth() + 1);
+      const _dd   = _pad(_now.getDate());
+      const _hh   = _pad(_now.getHours());
+      const _min  = _pad(_now.getMinutes());
+      const _dateEl = document.getElementById('logDate');
+      const _timeEl = document.getElementById('logTime');
+      if (_dateEl && !_dateEl.value) _dateEl.value = `${_yyyy}-${_mm}-${_dd}`;
+      if (_timeEl && !_timeEl.value) _timeEl.value = `${_hh}:${_min}`;
+
+      // ── Character counters ──────────────────────────────────
+      [
+        { ta: 'nutritionNotes', counter: 'nutritionNotesCount' },
+        { ta: 'wellnessNotes',  counter: 'wellnessNotesCount'  },
+      ].forEach(({ ta, counter }) => {
+        const el  = document.getElementById(ta);
+        const cnt = document.getElementById(counter);
+        if (!el || !cnt) return;
+        const update = () => {
+          const used = el.value.length;
+          const max  = el.maxLength;
+          const rem  = max - used;
+          cnt.textContent = `${used} / ${max}`;
+          cnt.setAttribute('aria-label', `${rem} characters remaining out of ${max}`);
+          // Near-limit visual feedback (>90% full = warning, at limit = error)
+          cnt.classList.toggle('near-limit', used / max >= 0.9 && used < max);
+          cnt.classList.toggle('at-limit',   used >= max);
+        };
+        el.addEventListener('input', update);
+        update();
+      });
+
+      // ── Mood icon buttons – sync with slider ────────────────
+      const moodSlider = document.getElementById('moodScale');
+      const moodValue  = document.getElementById('moodValue');
+
+      function setMoodBtn(val) {
+        document.querySelectorAll('.mood-btn').forEach(b => {
+          const match = Number(b.dataset.mood) === Number(val);
+          b.classList.toggle('selected', match);
+          b.setAttribute('aria-pressed', String(match));
+        });
+      }
+
+      document.querySelectorAll('.mood-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const val = btn.dataset.mood;
+          setMoodBtn(val);
+          if (moodSlider) { moodSlider.value = val; moodSlider.setAttribute('aria-valuenow', val); }
+          if (moodValue)  moodValue.textContent = val;
+        });
+      });
+
+      // ── Form validation ─────────────────────────────────────
+      const form             = document.getElementById('healthLogForm');
+      const errorSummary     = document.getElementById('errorSummary');
+      const errorSummaryList = document.getElementById('errorSummaryList');
+      const successOverlay   = document.getElementById('successOverlay');
+      const liveRegion       = document.getElementById('form-live-region');
+
+      function validateField(input) {
+        const group   = input.closest('.form-group');
+        const errorEl = group ? group.querySelector('[role="alert"]') : null;
+        const valid   = input.checkValidity();
+        input.classList.toggle('is-error', !valid);
+        input.setAttribute('aria-invalid', String(!valid));
+        if (errorEl) errorEl.style.display = valid ? 'none' : 'flex';
+        return valid;
+      }
+
+      form.querySelectorAll('input[required], select[required], textarea[required]').forEach(input => {
+        input.addEventListener('blur',  () => validateField(input));
+        input.addEventListener('input', () => { if (input.classList.contains('is-error')) validateField(input); });
+      });
+
+      form.addEventListener('submit', e => {
+        e.preventDefault();
+        const required = form.querySelectorAll('input[required], select[required], textarea[required]');
+        const errors   = [];
+        let firstError = null;
+
+        required.forEach(input => {
+          if (!validateField(input)) {
+            const lbl     = form.querySelector(`label[for="${input.id}"]`);
+            const lblText = lbl ? lbl.textContent.replace('*', '').trim() : input.id;
+            errors.push({ id: input.id, text: lblText });
+            if (!firstError) firstError = input;
+          }
+        });
+
+        if (errors.length > 0) {
+          errorSummaryList.innerHTML = errors
+            .map(err => `<li><a href="#${err.id}">${escapeHtml(err.text)} — this field is required</a></li>`)
+            .join('');
+          errorSummary.style.display = 'block';
+          errorSummary.focus();
+          liveRegion.textContent = `Form has ${errors.length} error${errors.length > 1 ? 's' : ''}. Please review and correct.`;
+        } else {
+          // ── Build structured data object ──
+          const logEntry = {
+            date:     document.getElementById('logDate')?.value || '',
+            logTime:  document.getElementById('logTime')?.value  || '',
+            activity: {
+              steps:        parseInt(document.getElementById('stepsInput')?.value)    || 0,
+              activeMinutes:parseInt(document.getElementById('activeMinutes')?.value) || 0,
+              activityType: document.querySelector('input[name="activityType"]:checked')?.value || ''
+            },
+            nutrition: {
+              waterLitres: parseFloat(document.getElementById('waterLitres')?.value) || 0,
+              mealsCount:  parseInt(document.getElementById('mealsCount')?.value)     || 0,
+              notes:       document.getElementById('nutritionNotes')?.value           || ''
+            },
+            sleep: {
+              sleepHours:   parseFloat(document.getElementById('sleepHours')?.value)  || 0,
+              sleepQuality: document.getElementById('sleepQuality')?.value             || '',
+              moodScale:    parseInt(document.getElementById('moodScale')?.value)      || 7,
+              energyScale:  parseInt(document.getElementById('energyScale')?.value)    || 7,
+              notes:        document.getElementById('wellnessNotes')?.value            || ''
+            },
+            medications: Array.from(document.querySelectorAll('.med-check:checked')).map(cb => cb.value),
+            medNotes:    document.getElementById('medNotes')?.value || ''
+          };
+
+          // ── Save to localStorage immediately (offline fallback) ──
+          try {
+            const existing = JSON.parse(localStorage.getItem('healthLogs') || '[]');
+            const filtered = existing.filter(l => l.date !== logEntry.date);
+            filtered.unshift(logEntry);
+            localStorage.setItem('healthLogs', JSON.stringify(filtered.slice(0, 90))); // 90 days max
+          } catch {}
+
+          // ── Loading state on submit button ──
+          const submitBtn = document.getElementById('submitBtn');
+          const submitLbl = document.getElementById('submitBtnLabel');
+          if (submitBtn) submitBtn.setAttribute('aria-busy', 'true');
+          if (submitLbl) submitLbl.textContent = 'Saving…';
+
+          // ── POST to local server (writes to health-data.json) ──
+          // Fire-and-forget: localStorage already saved so success modal always shows
+          fetch('/api/logs', {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body:    JSON.stringify(logEntry),
+            signal:  AbortSignal.timeout(3000)
+          }).catch(() => {}); // Silently ignore if server not running
+
+          // ── Populate success modal summary ──
+          const dateVal  = document.getElementById('logDate');
+          const stepsVal = document.getElementById('stepsInput');
+          const waterVal = document.getElementById('waterLitres');
+          const sleepVal = document.getElementById('sleepHours');
+          const sdEl     = document.getElementById('successDate');
+          const ssEl     = document.getElementById('successSteps');
+          const swEl     = document.getElementById('successWater');
+          const sslEl    = document.getElementById('successSleep');
+          if (dateVal && sdEl) {
+            const d = new Date(dateVal.value + 'T00:00:00');
+            sdEl.textContent = isNaN(d) ? dateVal.value : d.toLocaleDateString('en-GB', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+          }
+          if (stepsVal && ssEl) ssEl.textContent = stepsVal.value ? Number(stepsVal.value).toLocaleString() + ' steps' : '-';
+          if (waterVal && swEl) swEl.textContent = waterVal.value ? waterVal.value + ' L' : '-';
+          if (sleepVal && sslEl) sslEl.textContent = sleepVal.value ? sleepVal.value + ' hours' : '-';
+
+          errorSummary.style.display = 'none';
+          setTimeout(() => {
+            if (submitBtn) submitBtn.setAttribute('aria-busy', 'false');
+            if (submitLbl) submitLbl.textContent = 'Save Today\'s Log';
+            successOverlay.classList.add('show');
+            document.getElementById('successTitle').focus();
+            liveRegion.textContent = 'Your health log has been saved successfully.';
+          }, 600);
+        }
+      });
+
+      // ── Save draft ──────────────────────────────────────────
+      document.getElementById('saveDraftBtn').addEventListener('click', () => {
+        ToastSystem.show('success', 'Draft saved', 'Your log has been saved as a draft.');
+      });
+
+      // ── Success modal close & form reset ────────────────────
+      function closeModal() {
+        successOverlay.classList.remove('show');
+        form.reset();
+        // form.reset() resets form controls but not our custom display elements
+        if (moodSlider) { setMoodBtn(moodSlider.defaultValue || 7); }
+        if (moodValue)  moodValue.textContent = moodSlider ? moodSlider.defaultValue : '7';
+        document.querySelectorAll('.form-range[data-output]').forEach(r => {
+          const out = document.getElementById(r.dataset.output);
+          if (out) out.textContent = r.defaultValue;
+        });
+        // Re-set date/time to now (form.reset() clears them to the blank default)
+        const now2 = new Date();
+        const pad2 = n => String(n).padStart(2, '0');
+        const dateEl2 = document.getElementById('logDate');
+        const timeEl2 = document.getElementById('logTime');
+        if (dateEl2) dateEl2.value = `${now2.getFullYear()}-${pad2(now2.getMonth()+1)}-${pad2(now2.getDate())}`;
+        if (timeEl2) timeEl2.value = `${pad2(now2.getHours())}:${pad2(now2.getMinutes())}`;
+        document.getElementById('submitBtn').focus();
+      }
+
+      document.getElementById('closeSuccessBtn').addEventListener('click', closeModal);
+
+      // Trap focus within modal and close on Escape
+      trapFocus(successOverlay);
+      successOverlay.addEventListener('keydown', e => {
+        if (e.key === 'Escape' && successOverlay.classList.contains('show')) closeModal();
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HealthTrack Peer Audit Form</title>
+  <style>
+    :root {
+      --primary: #218080;
+      --bg: #f6f8fa;
+      --card: #ffffff;
+      --text: #1f2637;
+      --muted: #636d82;
+      --border: #d8dce4;
+      --good: #1a7a4a;
+      --warn: #8c5700;
+    }
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 24px;
+      line-height: 1.5;
+    }
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 24px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+    }
+    h1, h2 { margin-top: 0; color: var(--primary); }
+    .subtle { color: var(--muted); }
+    .grid { display: grid; gap: 16px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .card { border: 1px solid var(--border); border-radius: 10px; padding: 14px; }
+    label { display: block; font-weight: 600; margin-bottom: 6px; }
+    input, textarea, select { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px; box-sizing: border-box; }
+    textarea { min-height: 80px; resize: vertical; }
+    table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+    th, td { border: 1px solid var(--border); padding: 10px; text-align: left; vertical-align: top; }
+    th { background: #f2f5f7; }
+    .row { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 8px; }
+    .pill { border: 1px solid var(--border); border-radius: 999px; padding: 6px 10px; font-size: 0.95rem; }
+    .actions { display: flex; gap: 10px; margin-top: 20px; }
+    button { background: var(--primary); color: white; border: none; border-radius: 8px; padding: 10px 14px; cursor: pointer; }
+    @media print {
+      body { background: white; padding: 0; }
+      .container { box-shadow: none; border: none; padding: 0; }
+      button { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <form id="auditForm" class="container">
+    <h1>HealthTrack Peer Audit Form</h1>
+    <p class="subtle">This form can be used to review the HealthTrack web project for accessibility, usability, and completeness.</p>
+
+    <div class="grid">
+      <div class="card">
+        <label>Project Name</label>
+        <input id="projectName" name="projectName" type="text" value="HealthTrack Web Application" />
+      </div>
+      <div class="card">
+        <label>Audit Date</label>
+        <input id="auditDate" name="auditDate" type="date" />
+      </div>
+      <div class="card">
+        <label>Auditor Name(s)</label>
+        <input id="auditorName" name="auditorName" type="text" placeholder="e.g. Group A / Peer Reviewer" />
+      </div>
+      <div class="card">
+        <label>Website Link</label>
+        <input id="websiteLink" name="websiteLink" type="url" placeholder="https://your-project.vercel.app" />
+      </div>
+    </div>
+
+    <h2>1. General Review</h2>
+    <div class="grid">
+      <div class="card">
+        <label>Project Summary</label>
+        <textarea id="projectSummary" name="projectSummary" placeholder="Briefly summarise the project and its purpose."></textarea>
+      </div>
+      <div class="card">
+        <label>Overall Impression</label>
+        <textarea id="overallImpression" name="overallImpression" placeholder="Describe the overall quality, clarity, and completeness of the website."></textarea>
+      </div>
+    </div>
+
+    <h2>2. Accessibility & Usability Checklist</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Area</th>
+          <th>Check</th>
+          <th>Rating</th>
+          <th>Comments / Evidence</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Navigation</td>
+          <td>Menus and links are clear, consistent, and easy to use.</td>
+          <td>
+            <select>
+              <option>Excellent</option>
+              <option>Good</option>
+              <option>Fair</option>
+              <option>Needs Improvement</option>
+            </select>
+          </td>
+          <td><textarea></textarea></td>
+        </tr>
+        <tr>
+          <td>Readability</td>
+          <td>Text is readable, well-sized, and easy to understand.</td>
+          <td>
+            <select>
+              <option>Excellent</option>
+              <option>Good</option>
+              <option>Fair</option>
+              <option>Needs Improvement</option>
+            </select>
+          </td>
+          <td><textarea></textarea></td>
+        </tr>
+        <tr>
+          <td>Colour Contrast</td>
+          <td>Text and UI elements have good contrast and are colour-blind friendly.</td>
+          <td>
+            <select>
+              <option>Excellent</option>
+              <option>Good</option>
+              <option>Fair</option>
+              <option>Needs Improvement</option>
+            </select>
+          </td>
+          <td><textarea></textarea></td>
+        </tr>
+        <tr>
+          <td>Forms & Inputs</td>
+          <td>Forms are labelled clearly and errors are understandable.</td>
+          <td>
+            <select>
+              <option>Excellent</option>
+              <option>Good</option>
+              <option>Fair</option>
+              <option>Needs Improvement</option>
+            </select>
+          </td>
+          <td><textarea></textarea></td>
+        </tr>
+        <tr>
+          <td>Keyboard / Focus</td>
+          <td>Page can be used with keyboard navigation and focus is visible.</td>
+          <td>
+            <select>
+              <option>Excellent</option>
+              <option>Good</option>
+              <option>Fair</option>
+              <option>Needs Improvement</option>
+            </select>
+          </td>
+          <td><textarea></textarea></td>
+        </tr>
+        <tr>
+          <td>Responsive Design</td>
+          <td>Website works well on desktop and mobile screen sizes.</td>
+          <td>
+            <select>
+              <option>Excellent</option>
+              <option>Good</option>
+              <option>Fair</option>
+              <option>Needs Improvement</option>
+            </select>
+          </td>
+          <td><textarea></textarea></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>3. Strengths</h2>
+    <textarea id="strengths" name="strengths" placeholder="List the strongest parts of the project."></textarea>
+
+    <h2>4. Areas for Improvement</h2>
+    <textarea id="improvements" name="improvements" placeholder="List problems, missing features, or improvements needed."></textarea>
+
+    <h2>5. Final Verdict</h2>
+    <div class="card">
+      <label>Overall Rating</label>
+      <select id="overallRating" name="overallRating">
+        <option>Distinction</option>
+        <option>Merit</option>
+        <option>Pass</option>
+        <option>Needs Improvement</option>
+      </select>
+      <label style="margin-top: 10px;">Final Comments</label>
+      <textarea id="finalComments" name="finalComments" placeholder="Summarise your final judgment and recommendations."></textarea>
+    </div>
+
+    <div id="statusMsg" class="subtle" role="status" aria-live="polite"></div>
+
+    <div class="actions">
+      <button id="printBtn" type="button">Print / Save as PDF</button>
+      <button id="saveBtn" type="button" style="background:#1a7a4a;">Save to File</button>
+    </div>
+  </form>
+
+  <script>
+    const form = document.getElementById('auditForm');
+    const statusMsg = document.getElementById('statusMsg');
+    const saveBtn = document.getElementById('saveBtn');
+    const printBtn = document.getElementById('printBtn');
+
+    function saveDraft() {
+      const data = Object.fromEntries(new FormData(form).entries());
+      data.savedAt = new Date().toLocaleString();
+      localStorage.setItem('healthtrackAuditForm', JSON.stringify(data));
+    }
+
+    function loadDraft() {
+      try {
+        const saved = JSON.parse(localStorage.getItem('healthtrackAuditForm') || '{}');
+        Object.entries(saved).forEach(([key, value]) => {
+          const field = form.elements[key];
+          if (field && value !== undefined) {
+            field.value = value;
+          }
+        });
+      } catch (error) {
+        console.warn('Could not load saved audit draft', error);
+      }
+    }
+
+    function saveToFile() {
+      const data = Object.fromEntries(new FormData(form).entries());
+      data.savedAt = new Date().toLocaleString();
+      localStorage.setItem('healthtrackAuditForm', JSON.stringify(data));
+
+      const content = JSON.stringify(data, null, 2);
+      const blob = new Blob([content], { type: 'application/json;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `healthtrack-audit-${Date.now()}.json`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+
+      statusMsg.textContent = 'Audit saved as a downloadable file.';
+      statusMsg.style.color = '#1a7a4a';
+    }
+
+    form.addEventListener('input', saveDraft);
+    form.addEventListener('change', saveDraft);
+    saveBtn.addEventListener('click', saveToFile);
+    printBtn.addEventListener('click', () => {
+      saveDraft();
+      window.print();
+    });
+
+    window.addEventListener('DOMContentLoaded', loadDraft);
+  </script>
+</body>
+</html>
